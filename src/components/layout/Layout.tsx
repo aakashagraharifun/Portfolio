@@ -7,26 +7,23 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-/**
- * Main layout wrapper component
- * Provides consistent header and footer across all pages
- * Homepage removes top padding to allow header overlay on hero
- */
+// Main layout wrapper component
 export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const isHomepage = location.pathname === '/';
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      {!isAdminPage && <Header />}
       <main 
         id="main-content" 
-        className={`flex-1 ${isHomepage ? '' : 'pt-16'}`}
+        className={`flex-1 ${isHomepage || isAdminPage ? '' : 'pt-16'}`}
         tabIndex={-1}
       >
         {children}
       </main>
-      <Footer />
+      {!isAdminPage && <Footer />}
     </div>
   );
 }

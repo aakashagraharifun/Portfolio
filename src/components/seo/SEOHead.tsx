@@ -16,15 +16,14 @@ interface SEOHeadProps {
 export function SEOHead({ 
   title, 
   description, 
-  // Photo by Oyemike Princewill on Unsplash
-  image = 'https://images.unsplash.com/photo-1662333085102-f6ae3be21c91?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3MDA2OTF8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NjI3Njk1NjB8&ixlib=rb-4.1.0&q=80&w=1080',
+  image = '/og-image.png',
   type = 'website'
 }: SEOHeadProps) {
   const location = useLocation();
   
   const fullTitle = title 
     ? `${title} | ${photographerInfo.name}` 
-    : `${photographerInfo.name} - ${photographerInfo.tagline}`;
+    : `${photographerInfo.name} — ${photographerInfo.tagline}`;
   
   const defaultDescription = photographerInfo.heroIntroduction;
   const fullDescription = description || defaultDescription;
@@ -69,7 +68,7 @@ export function SEOHead({
 
     // Additional SEO tags
     updateMetaTag('author', photographerInfo.name);
-    updateMetaTag('keywords', `photography, ${photographerInfo.name}, professional photographer, ${photographerInfo.tagline}`);
+    updateMetaTag('keywords', `developer, ${photographerInfo.name}, full stack, hackathon winner, AI enthusiast, ${photographerInfo.tagline}`);
   }, [fullTitle, fullDescription, fullUrl, image, type]);
 
   return null;

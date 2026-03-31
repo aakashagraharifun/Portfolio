@@ -1,9 +1,9 @@
 /**
- * Core TypeScript interfaces for Frame Portfolio
- * Based on SPECIFICATION.md data model requirements
+ * Core TypeScript interfaces for Aakash Agrahari's Portfolio
+ * Adapted for a developer/builder portfolio
  */
 
-export type ProjectCategory = 'portraits' | 'landscapes' | 'editorial' | 'architecture' | 'documentary';
+export type ProjectCategory = 'hackathon' | 'webapp' | 'startup' | 'business' | 'creative' | 'utility';
 
 export type AspectRatio = 'portrait' | 'landscape' | 'square';
 
@@ -27,6 +27,10 @@ export interface Project {
   camera?: string;
   location?: string;
   slug: string;
+  liveUrl?: string;
+  githubUrl?: string;
+  techStack?: string[];
+  highlight?: string;
 }
 
 export interface PhotographerInfo {
@@ -46,6 +50,8 @@ export interface PhotographerInfo {
     instagram?: string;
     linkedin?: string;
     behance?: string;
+    github?: string;
+    website?: string;
   };
   portraitImage: string;
 }
@@ -53,7 +59,7 @@ export interface PhotographerInfo {
 export interface ContactSubmission {
   name: string;
   email: string;
-  projectType: 'editorial' | 'commercial' | 'personal';
+  projectType: 'collaboration' | 'freelance' | 'startup' | 'other';
   message: string;
   timestamp: Date;
 }

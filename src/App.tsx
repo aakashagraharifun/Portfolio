@@ -19,6 +19,29 @@ const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const NotFound = lazy(() => import("./pages/NotFound"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+import { Navigate } from "react-router-dom";
+
+// Secure Protected Route Component
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const [loading, setLoading] = useState(true);
+  const [authorized, setAuthorized] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setAuthorized(!!session);
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) return <LoadingFallback />;
+  if (!authorized) return <Navigate to="/admin" replace />;
+  
+  return <>{children}</>;
+};
 
 const queryClient = new QueryClient();
 
@@ -65,6 +88,24 @@ function AnimatedRoutes() {
           element={
             <PageTransition>
               <Contact />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <PageTransition>
+              <AdminLogin />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <PageTransition>
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
             </PageTransition>
           }
         />

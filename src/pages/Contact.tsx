@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Mail, Phone, MapPin } from 'lucide-react';
+import { Mail, MapPin, GraduationCap } from 'lucide-react';
 import { photographerInfo } from '@/data/photographer';
 import { ContactForm } from '@/components/forms/ContactForm';
 import { Separator } from '@/components/ui/separator';
@@ -14,7 +14,7 @@ export default function Contact() {
     <>
       <SEOHead
         title="Contact"
-        description={`Get in touch with ${photographerInfo.name} for photography inquiries, collaborations, and project bookings. ${photographerInfo.availability}`}
+        description={`Get in touch with ${photographerInfo.name} for collaborations, freelance work, startup opportunities, and project inquiries. ${photographerInfo.availability}`}
       />
       
       <div className="min-h-screen">
@@ -30,7 +30,7 @@ export default function Contact() {
               Get in Touch
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide">
-              Let's discuss your next project
+              Let's build something together
             </p>
           </motion.div>
         </div>
@@ -52,7 +52,7 @@ export default function Contact() {
                   Send a Message
                 </h2>
                 <p className="text-muted-foreground font-light">
-                  Fill out the form below and I'll get back to you within 24-48 hours. {photographerInfo.availability}
+                  Fill out the form below and I'll get back to you soon. {photographerInfo.availability}.
                 </p>
               </div>
 
@@ -71,7 +71,7 @@ export default function Contact() {
                   Contact Information
                 </h2>
                 <p className="text-muted-foreground font-light">
-                  Prefer to reach out directly? Here's how you can contact me.
+                  Prefer to reach out directly? Here's how you can find me.
                 </p>
               </div>
 
@@ -97,21 +97,18 @@ export default function Contact() {
                   </div>
                 </div>
 
-                {/* Phone */}
+                {/* Education */}
                 <div className="flex items-start gap-4">
                   <div className="p-3 rounded-sm bg-accent">
-                    <Phone className="size-5 text-muted-foreground" />
+                    <GraduationCap className="size-5 text-muted-foreground" />
                   </div>
                   <div className="space-y-1">
                     <p className="text-sm font-light tracking-wide text-muted-foreground">
-                      Phone
+                      Education
                     </p>
-                    <a
-                      href={`tel:${photographerInfo.phone}`}
-                      className="text-base md:text-lg font-light hover:text-muted-foreground transition-colors"
-                    >
-                      {photographerInfo.phone}
-                    </a>
+                    <p className="text-base md:text-lg font-light">
+                      {photographerInfo.education}
+                    </p>
                   </div>
                 </div>
 

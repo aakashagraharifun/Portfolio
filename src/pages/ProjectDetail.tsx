@@ -1,29 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Camera, User } from 'lucide-react';
+import { Calendar, MapPin, ExternalLink, Github, User, Code2, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { getProjectBySlug } from '@/data/projects';
+import { getProjectBySlug } from '@/services/projectService';
 import { ImageWithLightbox } from '@/components/portfolio/ImageWithLightbox';
 import { Lightbox } from '@/components/portfolio/Lightbox';
+import { Project } from '@/types';
 
 /**
- * Project detail page with hero image, gallery, and full-screen lightbox
- * Features smooth animations and immersive image viewing experience
+ * Project detail page with live fetching from Supabase
+ * Displays technical details, galleries, and project highlights dynamically
  */
 export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const project = slug ? getProjectBySlug(slug) : undefined;
-
+  const [project, setProject] = useState<Project | null>(null);
+  const [loading, setLoading] = useState(true);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // 404 if project not found
-  if (!project) {
-    return <Navigate to="/404" replace />;
-  }
+  useEffect(() => {
+    async function loadProject() {
+      if (slug) {
+        const data = await getProjectBySlug(slug);
+        setProject(data);
+        setLoading(false);
+      }
+    }
+    loadProject();
+  }, [slug]);
 
   const openLightbox = (index: number) => {
     setCurrentImageIndex(index);
@@ -33,6 +40,19 @@ export default function ProjectDetail() {
   const closeLightbox = () => {
     setLightboxOpen(false);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="size-16 animate-spin opacity-20 text-primary" />
+      </div>
+    );
+  }
+
+  // 404 if project not found
+  if (!project) {
+    return <Navigate to="/404" replace />;
+  }
 
   return (
     <>
@@ -58,8 +78,15 @@ export default function ProjectDetail() {
           loading="eager"
           fetchPriority="high"
         />
-        {/* Gradient overlay for depth */}
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
+        
+        {project.highlight && (
+          <div className="absolute top-6 right-6">
+            <span className="px-4 py-2 bg-background/90 backdrop-blur-sm text-sm font-light tracking-wide rounded-sm border border-border">
+              {project.highlight}
+            </span>
+          </div>
+        )}
       </motion.div>
 
       {/* Project Info Section */}
@@ -70,7 +97,6 @@ export default function ProjectDetail() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          {/* Title and Category */}
           <div className="space-y-4">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-light tracking-wide">
               {project.title}
@@ -84,43 +110,66 @@ export default function ProjectDetail() {
                 <span>•</span>
                 <span>{project.category}</span>
               </div>
-              {project.location && (
-                <>
-                  <span>•</span>
-                  <div className="flex items-center gap-2">
-                    <MapPin className="size-4" />
-                    <span>{project.location}</span>
-                  </div>
-                </>
-              )}
             </div>
           </div>
 
           <Separator />
 
-          {/* Description */}
           <div className="space-y-4">
             <p className="text-lg md:text-xl font-light leading-relaxed text-foreground">
               {project.description}
             </p>
           </div>
 
-          {/* Technical Details */}
+          <div className="flex flex-wrap gap-4">
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-foreground text-background text-sm font-light tracking-wide rounded-sm hover:bg-foreground/90 transition-colors shadow-lg"
+              >
+                <ExternalLink className="size-4" />
+                View Live
+              </a>
+            )}
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 border border-border text-sm font-light tracking-wide rounded-sm hover:bg-accent transition-colors"
+              >
+                <Github className="size-4" />
+                Source Code
+              </a>
+            )}
+          </div>
+
           <div className="grid md:grid-cols-2 gap-6 pt-4">
-            {project.camera && (
-              <div className="space-y-2">
+            {project.techStack && project.techStack.length > 0 && (
+              <div className="space-y-3">
                 <div className="flex items-center gap-2 text-sm font-light tracking-wide uppercase text-muted-foreground">
-                  <Camera className="size-4" />
-                  <span>Camera</span>
+                  <Code2 className="size-4" />
+                  <span>Tech Stack</span>
                 </div>
-                <p className="font-light text-foreground">{project.camera}</p>
+                <div className="flex flex-wrap gap-2">
+                  {project.techStack.map((tech, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 text-sm font-light border border-border rounded-sm"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
               </div>
             )}
             {project.client && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-sm font-light tracking-wide uppercase text-muted-foreground">
                   <User className="size-4" />
-                  <span>Client</span>
+                  <span>Context</span>
                 </div>
                 <p className="font-light text-foreground">{project.client}</p>
               </div>
@@ -129,24 +178,25 @@ export default function ProjectDetail() {
         </motion.div>
       </section>
 
-        {/* Image Gallery - Edge to edge */}
-        <section className="py-12 md:py-16">
-          <div className="space-y-8 md:space-y-12">
-            {project.images.map((image, index) => (
-              <ScrollReveal key={image.id} delay={index * 0.1}>
-                <ImageWithLightbox
-                  image={image}
-                  onClick={() => openLightbox(index)}
-                  priority={index === 0}
-                  index={0}
-                  className="w-full"
-                />
-              </ScrollReveal>
-            ))}
-          </div>
-        </section>
+        {/* Gallery Section - Only if images exist */}
+        {project.images && project.images.length > 0 && (
+          <section className="py-12 md:py-16">
+            <div className="space-y-8 md:space-y-12">
+              {project.images.map((image, index) => (
+                <ScrollReveal key={image.id} delay={index * 0.1}>
+                  <ImageWithLightbox
+                    image={image}
+                    onClick={() => openLightbox(index)}
+                    priority={index === 0}
+                    index={0}
+                    className="w-full"
+                  />
+                </ScrollReveal>
+              ))}
+            </div>
+          </section>
+        )}
 
-        {/* Lightbox */}
         <Lightbox
           images={project.images}
           currentIndex={currentImageIndex}
