@@ -1,148 +1,201 @@
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
-import { useRef } from 'react';
-import { GraduationCap, Trophy, Rocket, Briefcase, Sparkles } from 'lucide-react';
+import { useRef, useEffect, useState } from 'react';
+import { GraduationCap, Trophy, Rocket, Briefcase, Sparkles, Loader2, ArrowDown } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 interface JourneyPoint {
-  id: number;
+  id: string;
   year: string;
   title: string;
   description: string;
-  icon: any;
-  position: { x: number; y: number };
+  icon_type: string;
 }
 
-const points: JourneyPoint[] = [
-  {
-    id: 1,
-    year: '2022',
-    title: 'ARGU Journey Begins',
-    description: 'Started B.Tech in Computer Science at Assam Royal Global University.',
-    icon: GraduationCap,
-    position: { x: 200, y: 100 }
-  },
-  {
-    id: 2,
-    year: '2024',
-    title: 'The Great Build',
-    description: 'Won 1st Place at GCU Hackathon with CrewSpace AI.',
-    icon: Trophy,
-    position: { x: 600, y: 300 }
-  },
-  {
-    id: 3,
-    year: '2025',
-    title: 'Startup Launch',
-    description: 'Founding Intellaris Studio and building the future of Pulse Global.',
-    icon: Rocket,
-    position: { x: 300, y: 550 }
-  },
-  {
-    id: 4,
-    year: '2026',
-    title: 'The Infinite Horizon',
-    description: 'Scaling innovations and winning the next frontier of AI.',
-    icon: Sparkles,
-    position: { x: 700, y: 750 }
-  }
+const DEMO_POINTS: JourneyPoint[] = [
+  { id: '1', year: '2022', title: 'The Start', description: 'Began the engineering journey at ARGU.', icon_type: 'cap' },
+  { id: '2', year: '2024', title: 'GCU Winner', description: 'Won #1 at Euphuism 2026 with CrewSpace.', icon_type: 'trophy' },
+  { id: '3', year: '2025', title: 'Startup Lab', description: 'Building Intellaris Studio from scratch.', icon_type: 'rocket' },
+  { id: '4', year: '2026', title: 'The Future', description: 'Scaling AI-native workflow engines.', icon_type: 'sparkles' }
 ];
 
 /**
- * Interactive Journey Timeline with SVG Path Animation
- * Inspired by the user provided image - wavy path with floating nodes
+ * MASTER JOURNEY TIMELINE - THE BUILDER PATH
+ * Brutalist aesthetic with high-impact path animation.
  */
 export function JourneyTimeline() {
+  const [points, setPoints] = useState<JourneyPoint[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchTimeline() {
+      try {
+        const { data, error } = await supabase
+          .from('timeline')
+          .select('*')
+          .order('sort_order', { ascending: true });
+          
+        if (!error && data && data.length > 0) {
+          setPoints(data);
+        } else {
+          setPoints(DEMO_POINTS); // Fallback to demo points so you see the beauty immediately
+        }
+      } catch (e) {
+        setPoints(DEMO_POINTS);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchTimeline();
+  }, []);
+
+  if (loading) return (
+    <div className="h-64 flex items-center justify-center">
+      <Loader2 className="size-12 animate-spin text-primary opacity-20" />
+    </div>
+  );
+
+  return <TimelineContent points={points} />;
+}
+
+function TimelineContent({ points }: { points: JourneyPoint[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end end"]
+    offset: ["start center", "end center"]
   });
 
   const pathLength = useSpring(scrollYProgress, {
-    stiffness: 100,
-    damping: 30,
+    stiffness: 80,
+    damping: 25,
     restDelta: 0.001
   });
 
+  const getIcon = (type: string) => {
+    switch (type) {
+      case 'cap': return GraduationCap;
+      case 'trophy': return Trophy;
+      case 'rocket': return Rocket;
+      case 'briefcase': return Briefcase;
+      default: return Sparkles;
+    }
+  };
+
+  const getPointPosition = (index: number, total: number) => {
+     const y = (index + 0.5) * (1000 / total);
+     // Wide oscillation for the 'Veeshal' curve feel
+     const x = 500 + Math.sin(index * 2) * 280;
+     return { x, y };
+  };
+
+  const totalHeight = Math.max(1000, points.length * 250);
+
   return (
-    <section ref={containerRef} className="relative py-32 bg-background overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-20 text-center">
-        <h2 className="text-4xl md:text-5xl font-light tracking-wide uppercase">The Builder's Path</h2>
-        <p className="mt-4 text-muted-foreground font-light">A visual odyssey through education, hackathons, and company builds.</p>
+    <section ref={containerRef} className="relative py-48 bg-white border-t-2 border-black overflow-hidden selection:bg-primary">
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-32 relative z-10">
+        <div className="flex flex-col items-center text-center space-y-6">
+          <div className="inline-block bg-primary text-black px-4 py-2 text-xs font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_black]">THE SHIP LOG</div>
+          <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter leading-none italic">MISSION<br />PROGRESS.</h2>
+          <motion.div animate={{ y: [0, 10, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
+             <ArrowDown className="size-10 mt-8 text-primary" />
+          </motion.div>
+        </div>
       </div>
 
-      <div className="relative w-full max-w-5xl mx-auto h-[900px]">
-        {/* SVG Path Layer */}
+      <div className="relative w-full max-w-6xl mx-auto" style={{ height: `${totalHeight}px` }}>
+        {/* Animated Background Line */}
         <svg
-          viewBox="0 0 1000 900"
+          viewBox={`0 0 1000 ${totalHeight}`}
           className="absolute inset-0 w-full h-full"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Background blurred path */}
+          {/* Base Static Line */}
           <path
-            d="M 100 0 Q 100 100 200 100 T 400 200 T 600 300 T 500 450 T 300 550 T 500 650 T 700 750 T 400 900"
-            stroke="currentColor"
-            strokeWidth="4"
-            className="text-primary/5"
+            d={`M 500 0 ${points.map((_, i) => {
+              const pos = getPointPosition(i, points.length);
+              return `L ${pos.x} ${pos.y}`;
+            }).join(' ')} L 500 ${totalHeight}`}
+            stroke="#E5E7EB"
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
           
-          {/* Animated drawing path */}
+          {/* Animated Building Line */}
           <motion.path
-            d="M 100 0 Q 100 100 200 100 T 400 200 T 600 300 T 500 450 T 300 550 T 500 650 T 700 750 T 400 900"
-            stroke="currentColor"
-            strokeWidth="4"
-            className="text-primary"
+            d={`M 500 0 ${points.map((_, i) => {
+              const pos = getPointPosition(i, points.length);
+              return `L ${pos.x} ${pos.y}`;
+            }).join(' ')} L 500 ${totalHeight}`}
+            stroke="black"
+            strokeWidth="10"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             style={{ pathLength }}
-            strokeDasharray="0 1"
+          />
+
+          {/* Yellow Highlight Line */}
+          <motion.path
+            d={`M 500 0 ${points.map((_, i) => {
+              const pos = getPointPosition(i, points.length);
+              return `L ${pos.x} ${pos.y}`;
+            }).join(' ')} L 500 ${totalHeight}`}
+            stroke="#FFD600"
+            strokeWidth="4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ pathLength }}
           />
         </svg>
 
-        {/* Nodes Layer */}
+        {/* Milestone Nodes */}
         {points.map((point, index) => {
-          // Logic to show icons only when the path reaches them
-          const threshold = (index + 1) / (points.length + 1);
+          const pos = getPointPosition(index, points.length);
+          const threshold = (index + 0.5) / points.length;
           const opacity = useTransform(scrollYProgress, [threshold - 0.1, threshold], [0, 1]);
           const scale = useTransform(scrollYProgress, [threshold - 0.1, threshold], [0.5, 1]);
+          const rotate = useTransform(scrollYProgress, [threshold - 0.1, threshold], [-45, 0]);
+          const Icon = getIcon(point.icon_type);
 
           return (
             <motion.div
               key={point.id}
               className="absolute z-20"
               style={{
-                left: `${(point.position.x / 1000) * 100}%`,
-                top: `${(point.position.y / 900) * 100}%`,
+                left: `${(pos.x / 1000) * 100}%`,
+                top: `${(pos.y / totalHeight) * 100}%`,
                 opacity,
-                scale
+                scale,
+                rotate,
+                transform: 'translate(-50%, -50%)'
               }}
             >
-              {/* Node Icon */}
               <div className="relative group">
-                <div className="size-16 rounded-full bg-background border-2 border-primary flex items-center justify-center shadow-[0_0_20px_rgba(var(--primary),0.3)] transition-transform duration-500 group-hover:scale-110">
-                  <point.icon className="size-7 text-primary" />
+                <div className="size-24 rounded-none bg-primary border-4 border-black flex items-center justify-center shadow-[8px_8px_0px_black] group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all duration-300">
+                  <Icon className="size-10 text-black" />
                 </div>
                 
-                {/* Content Box */}
                 <motion.div 
-                  className={`absolute top-1/2 -translate-y-1/2 ${index % 2 === 0 ? 'left-24' : 'right-24 text-right'} w-64 p-4 bg-accent/10 backdrop-blur-md border border-border rounded-sm`}
-                  initial={{ opacity: 0, x: index % 2 === 0 ? 20 : -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
+                  className={`absolute top-1/2 -translate-y-1/2 ${pos.x > 500 ? 'left-32' : 'right-32 text-right'} w-80 p-8 bg-white border-4 border-black shadow-[12px_12px_0px_rgba(255,214,0,0.4)] transition-all`}
                 >
-                  <span className="text-xs font-medium tracking-[0.2em] text-primary uppercase">{point.year}</span>
-                  <h3 className="text-lg font-light tracking-wide mt-1">{point.title}</h3>
-                  <p className="text-xs text-muted-foreground font-light mt-2 line-clamp-3 leading-relaxed">
+                  <span className="text-[12px] font-black tracking-[0.4em] text-primary uppercase block mb-3 border-b-2 border-primary pb-2 w-fit">{point.year}</span>
+                  <h3 className="text-3xl font-black uppercase tracking-tighter leading-tight italic">{point.title}</h3>
+                  <p className="text-sm text-black font-bold mt-4 leading-relaxed tracking-tight">
                     {point.description}
                   </p>
                 </motion.div>
                 
-                {/* Visual pulses */}
-                <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping -z-10" />
+                {/* Motion pulse effect */}
+                <div className="absolute inset-0 bg-primary/40 -z-10 group-hover:scale-150 group-hover:opacity-0 transition-all duration-1000" />
               </div>
             </motion.div>
           );
         })}
       </div>
+      
+      {/* Bottom spacing to anchor the timeline end */}
+      <div className="h-48" />
     </section>
   );
 }

@@ -1,80 +1,94 @@
-import { Github } from 'lucide-react';
-import { photographerInfo } from '@/data/photographer';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { getSocials } from '@/services/contentService';
+import { Github, Twitter, Linkedin, Mail, ExternalLink, ArrowUpRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 /**
- * Minimal footer component with social links and copyright
+ * MASTER DYNAMIC FOOTER
+ * Fetches all live links from Supabase socials.
  */
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const [socials, setSocials] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadLinks() {
+      const data = await getSocials();
+      setSocials(data);
+    }
+    loadLinks();
+  }, []);
+
+  const getIcon = (platform: string) => {
+    const p = platform.toLowerCase();
+    if (p.includes('git')) return Github;
+    if (p.includes('twit')) return Twitter;
+    if (p.includes('linke')) return Linkedin;
+    if (p.includes('mail') || p.includes('emai')) return Mail;
+    return ExternalLink;
+  };
 
   return (
-    <footer className="border-t border-border">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          {/* Copyright */}
-          <p className="text-sm text-muted-foreground font-light tracking-wide">
-            © {currentYear} {photographerInfo.name}. All rights reserved.
-          </p>
+    <footer className="bg-white border-t-2 border-black selection:bg-primary pt-24 pb-12">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-24">
+          
+          <div className="lg:col-span-2 space-y-8">
+            <div className="flex items-center gap-3">
+              <div className="bg-black text-primary px-3 py-1 font-black text-sm uppercase">AA</div>
+              <span className="font-black text-2xl uppercase tracking-tighter italic">BUILDER.</span>
+            </div>
+            <p className="text-xl font-black uppercase tracking-tight text-black leading-tight max-w-sm">
+              SHIPPING AI PRODUCTS AND <span className="text-primary border-b-4 border-black">HACKATHON WINNING</span> INTERFACES. 
+            </p>
+          </div>
 
-          {/* Social Links */}
-          <div className="flex items-center gap-6">
-            {photographerInfo.socialLinks.github && (
-              <a
-                href={photographerInfo.socialLinks.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="GitHub"
-              >
-                <Github className="size-5" />
-              </a>
-            )}
-            {photographerInfo.socialLinks.linkedin && (
-              <a
-                href={photographerInfo.socialLinks.linkedin}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="LinkedIn"
-              >
-                <svg
-                  className="size-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                  <rect width="4" height="12" x="2" y="9" />
-                  <circle cx="4" cy="4" r="2" />
-                </svg>
-              </a>
-            )}
-            {photographerInfo.socialLinks.website && (
-              <a
-                href={photographerInfo.socialLinks.website}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Website"
-              >
-                <svg
-                  className="size-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                  <path d="M2 12h20" />
-                </svg>
-              </a>
-            )}
+          <div>
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-8">NAVIGATION</h4>
+            <div className="flex flex-col gap-4 text-sm font-black uppercase tracking-widest text-black">
+              <Link to="/" className="hover:text-primary transition-colors">HOME</Link>
+              <Link to="/portfolio" className="hover:text-primary transition-colors">MISSIONS</Link>
+              <Link to="/about" className="hover:text-primary transition-colors">ABOUT</Link>
+              <Link to="/contact" className="hover:text-primary transition-colors">CONTACT</Link>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-8">LIVE CHANNELS</h4>
+            <div className="flex flex-col gap-4">
+              {socials.length > 0 ? socials.map((social) => {
+                const Icon = getIcon(social.platform);
+                return (
+                  <a 
+                    key={social.id} 
+                    href={social.url} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="flex justify-between items-center group text-sm font-black uppercase text-black"
+                  >
+                    <div className="flex items-center gap-3 group-hover:text-primary transition-colors">
+                      <Icon className="size-4" />
+                      <span>{social.platform}</span>
+                    </div>
+                    <ArrowUpRight className="size-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </a>
+                );
+              }) : (
+                 <span className="text-xs text-muted-foreground">Manage links in Admin.</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="pt-12 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            © 2026 AAKASH AGRAHARI — BUILT BY HAND.
+          </p>
+          <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+            <span className="hover:text-black cursor-pointer">PRIVACY</span>
+            <span className="hover:text-black cursor-pointer">TERMS</span>
+            <span className="bg-black text-primary px-2">GCU 2026</span>
           </div>
         </div>
       </div>

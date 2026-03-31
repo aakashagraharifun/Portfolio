@@ -1,200 +1,129 @@
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Github } from 'lucide-react';
-import { photographerInfo } from '@/data/photographer';
-import { Separator } from '@/components/ui/separator';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { supabase } from '@/lib/supabase';
+import { getSocials } from '@/services/contentService';
+import { Github, Linkedin, Mail, Loader2 } from 'lucide-react';
 
 /**
- * About page with biography, achievements, and professional information
- * Features split layout with portrait and comprehensive bio
+ * MASTER ABOUT PAGE - 100% DYNAMIC BUILDER PROFILE
+ * Fetches real-time identity and socials from Supabase.
  */
 export default function About() {
+  const [profile, setProfile] = useState<any>(null);
+  const [socials, setSocials] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadIdentity() {
+      try {
+        const [profileRes, socialsRes] = await Promise.all([
+          supabase.from('profile').select('*').single(),
+          getSocials()
+        ]);
+        if (profileRes.data) setProfile(profileRes.data);
+        setSocials(socialsRes || []);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadIdentity();
+  }, []);
+
+  const getPlatformLink = (platform: string) => {
+    const s = socials.find(s => s.platform.toLowerCase().includes(platform.toLowerCase()));
+    return s ? s.url : '#';
+  };
+
+  if (loading) return (
+    <div className="h-screen w-full flex items-center justify-center">
+       <Loader2 className="size-12 animate-spin text-primary opacity-20" />
+    </div>
+  );
+
   return (
     <>
-      <SEOHead
-        title="About"
-        description={`Learn about ${photographerInfo.name}, ${photographerInfo.tagline}. ${photographerInfo.biography.split('\n\n')[0]}`}
-        image={photographerInfo.portraitImage}
+      <SEOHead 
+        title={`About — ${profile?.name || 'Aakash'}`} 
+        description={profile?.bio || "The mission, the stack, and the builder behind the projects."}
       />
       
-      <div className="min-h-screen">
-        {/* Hero Section */}
-      <section className="py-24 md:py-32 px-6 lg:px-8 border-b border-border">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <motion.div
-            initial={{ opacity: 0.8, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-wide mb-4">
-              About
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide">
-              Full Stack Builder · AI/ML Enthusiast · Entrepreneur
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Portrait and Biography - Split Layout */}
-      <section className="py-16 md:py-24 px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-16 items-start">
-            {/* Portrait Image */}
-            <motion.div
-              className="space-y-6"
-              initial={{ opacity: 0.8, x: -10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
+      <div className="min-h-screen bg-white">
+        <section className="pt-48 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+            
+            <motion.div 
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="space-y-12"
             >
-              <div className="aspect-[3/4] relative overflow-hidden rounded-sm bg-muted">
-                {/* Replace with your own portrait image at public/portrait.jpg */}
-                <img
-                  src="/portrait.jpg"
-                  alt={photographerInfo.name}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    target.style.display = 'none';
-                  }}
-                />
+              <div className="space-y-6">
+                <div className="bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-block border-2 border-black">THE ORIGIN.</div>
+                <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none text-black italic">
+                   {profile?.tagline?.split(' ')[0] || 'FULL STACK'} <br />
+                   <span className="text-primary border-b-8 border-black">
+                     {profile?.tagline?.split(' ').slice(1).join(' ') || 'BUILDER.'}
+                   </span>
+                </h1>
               </div>
-              
-              {/* Social Links */}
-              <div className="flex items-center gap-4">
-                {photographerInfo.socialLinks.github && (
-                  <a
-                    href={photographerInfo.socialLinks.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 border border-border rounded-sm hover:bg-accent transition-colors"
-                    aria-label="GitHub"
-                  >
-                    <Github className="size-5" />
-                  </a>
-                )}
-                {photographerInfo.socialLinks.linkedin && (
-                  <a
-                    href={photographerInfo.socialLinks.linkedin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 border border-border rounded-sm hover:bg-accent transition-colors"
-                    aria-label="LinkedIn"
-                  >
-                    <svg
-                      className="size-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                      <rect width="4" height="12" x="2" y="9" />
-                      <circle cx="4" cy="4" r="2" />
-                    </svg>
-                  </a>
-                )}
-                {photographerInfo.socialLinks.website && (
-                  <a
-                    href={photographerInfo.socialLinks.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-3 border border-border rounded-sm hover:bg-accent transition-colors"
-                    aria-label="Website"
-                  >
-                    <svg
-                      className="size-5"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="10" />
-                      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                      <path d="M2 12h20" />
-                    </svg>
-                  </a>
-                )}
+
+              <div className="space-y-8 text-xl font-medium tracking-tight text-black/80 leading-relaxed max-w-2xl">
+                 <p>{profile?.bio || "No biography provided yet. Head to the Admin panel to define your mission."}</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-8 border-t-4 border-black pt-12">
+                 <div>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-4 italic">BATTLE TESTED</h4>
+                    <ul className="space-y-3">
+                       <li className="text-sm font-black uppercase">React / Next.js</li>
+                       <li className="text-sm font-black uppercase">Supabase / PostgreSQL</li>
+                       <li className="text-sm font-black uppercase">Python / AI Engines</li>
+                    </ul>
+                 </div>
+                 <div>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-4 italic">RECOGNITION</h4>
+                    <ul className="space-y-3">
+                       <li className="text-sm font-black uppercase">PRAJUKTI-GCU Hackathon Winner 2026, GIRIJANANDA CHOWDHURY UNIVERSITY</li>
+                       <li className="text-sm font-black uppercase">USTM 8th NEGC 2026 AI & Innovation Competition Winner</li>
+                       <li className="text-sm font-black uppercase">RUNNER UP IN CODEWAR 7.0, PYROKINESIS 2026 BY ASSAM ENGINEERING COLLEGE</li>
+                       <li className="text-sm font-black uppercase">Startup Cofounder - Intellaris Studio</li>
+                      
+                    </ul>
+                 </div>
+              </div>
+
+              <div className="flex gap-6 pt-8">
+                 <a href={getPlatformLink('github')} target="_blank" rel="noreferrer" className="size-16 border-2 border-black flex items-center justify-center hover:bg-black hover:text-primary transition-all">
+                    <Github className="size-6" />
+                 </a>
+                 <a href={getPlatformLink('linkedin')} target="_blank" rel="noreferrer" className="size-16 border-2 border-black flex items-center justify-center hover:bg-black hover:text-primary transition-all">
+                    <Linkedin className="size-6" />
+                 </a>
+                 <a href={getPlatformLink('mail')} target="_blank" rel="noreferrer" className="size-16 border-2 border-black flex items-center justify-center hover:bg-black hover:text-primary transition-all">
+                    <Mail className="size-6" />
+                 </a>
               </div>
             </motion.div>
 
-            {/* Biography and Info */}
-            <motion.div
-              className="space-y-8"
-              initial={{ opacity: 0.8, x: 10 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: 0.1 }}
+            <motion.div 
+               initial={{ opacity: 0, scale: 0.9 }}
+               animate={{ opacity: 1, scale: 1 }}
+               transition={{ duration: 1 }}
+               className="relative"
             >
-              {/* Name and Tagline */}
-              <div className="space-y-3">
-                <h2 className="text-4xl md:text-5xl font-light tracking-wide">
-                  {photographerInfo.name}
-                </h2>
-                <p className="text-xl text-muted-foreground font-light tracking-wide">
-                  {photographerInfo.tagline}
-                </p>
-              </div>
-
-              <Separator />
-
-              {/* Biography */}
-              <div className="space-y-4">
-                {photographerInfo.biography.split('\n\n').map((paragraph, index) => (
-                  <p
-                    key={index}
-                    className="text-base md:text-lg font-light leading-relaxed text-muted-foreground"
-                  >
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-
-              <Separator />
-
-              {/* Achievements */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-light tracking-wide uppercase text-muted-foreground">
-                  Achievements
-                </h3>
-                <ul className="space-y-2">
-                  {photographerInfo.awards.map((award, index) => (
-                    <li key={index} className="text-base font-light leading-relaxed text-foreground">
-                      {award}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Contact Info */}
-              <div className="pt-4 space-y-2">
-                <div className="text-sm font-light tracking-wide">
-                  <span className="text-muted-foreground">Email: </span>
-                  <a
-                    href={`mailto:${photographerInfo.email}`}
-                    className="text-foreground hover:text-muted-foreground transition-colors"
-                  >
-                    {photographerInfo.email}
-                  </a>
-                </div>
-                <div className="text-sm font-light tracking-wide">
-                  <span className="text-muted-foreground">Education: </span>
-                  <span className="text-foreground">{photographerInfo.education}</span>
-                </div>
-                <div className="text-sm font-light tracking-wide">
-                  <span className="text-muted-foreground">Location: </span>
-                  <span className="text-foreground">{photographerInfo.location}</span>
-                </div>
-              </div>
+               <div className="aspect-[3/4] bg-primary border-4 border-black shadow-[24px_24px_0px_black] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+                  <img src={profile?.portrait_url || "/portrait.jpg"} className="w-full h-full object-cover" alt={profile?.name || "Builder"} />
+               </div>
+               <div className="absolute -bottom-10 -right-10 bg-black text-primary p-8 space-y-2 hidden md:block border-4 border-primary">
+                  <span className="text-xs font-black uppercase tracking-widest block border-b border-primary pb-2">LOCATION</span>
+                  <p className="text-lg font-black uppercase tracking-tighter">{profile?.location || "GUWAHATI • INDIA, BUTWAL • NEPAL"}</p>
+               </div>
             </motion.div>
           </div>
-        </div>
-      </section>
+        </section>
       </div>
     </>
   );

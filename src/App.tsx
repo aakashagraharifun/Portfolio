@@ -1,146 +1,41 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import { Layout } from "@/components/layout/Layout";
-import { SkipToContent } from "@/components/ui/SkipToContent";
-import { LoadingFallback } from "@/components/ui/LoadingFallback";
-import { PageTransition } from "@/components/ui/PageTransition";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { AnimatePresence } from "framer-motion";
-import { lazy, Suspense } from "react";
+import { Routes, Route } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import Home from './pages/Home';
+import Portfolio from './pages/Portfolio';
+import About from './pages/About';
+import Contact from './pages/Contact';
+import Admin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
+import Blog from './pages/Blog';
+import BlogDetail from './pages/BlogDetail';
+import Gallery from './pages/Gallery';
+import { Header } from './components/layout/Header';
+import { Footer } from './components/layout/Footer';
+import { TransitionProvider } from './context/TransitionContext';
 
-// Code-split route components for better performance
-const Index = lazy(() => import("./pages/Index"));
-const Portfolio = lazy(() => import("./pages/Portfolio"));
-const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
-const About = lazy(() => import("./pages/About"));
-const Contact = lazy(() => import("./pages/Contact"));
-const NotFound = lazy(() => import("./pages/NotFound"));
-const AdminLogin = lazy(() => import("./pages/AdminLogin"));
-const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
-import { supabase } from "@/lib/supabase";
-import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-
-// Secure Protected Route Component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [loading, setLoading] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setAuthorized(!!session);
-      setLoading(false);
-    });
-  }, []);
-
-  if (loading) return <LoadingFallback />;
-  if (!authorized) return <Navigate to="/admin" replace />;
-  
-  return <>{children}</>;
-};
-
-const queryClient = new QueryClient();
-
-function AnimatedRoutes() {
-  const location = useLocation();
-
+function App() {
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route
-          path="/"
-          element={
-            <PageTransition>
-              <Index />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/portfolio"
-          element={
-            <PageTransition>
-              <Portfolio />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/project/:slug"
-          element={
-            <PageTransition>
-              <ProjectDetail />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <PageTransition>
-              <About />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/contact"
-          element={
-            <PageTransition>
-              <Contact />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <PageTransition>
-              <AdminLogin />
-            </PageTransition>
-          }
-        />
-        <Route
-          path="/admin/dashboard"
-          element={
-            <PageTransition>
-              <ProtectedRoute>
-                <AdminDashboard />
-              </ProtectedRoute>
-            </PageTransition>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <PageTransition>
-              <NotFound />
-            </PageTransition>
-          }
-        />
-      </Routes>
-    </AnimatePresence>
+    <TransitionProvider>
+      <div className="min-h-screen bg-white font-sans antialiased text-black selection:bg-primary selection:text-black">
+        <Header />
+        <main>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogDetail />} />
+            <Route path="/gallery" element={<Gallery />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          </Routes>
+        </main>
+        <Footer />
+        <Toaster position="top-center" richColors theme="light" />
+      </div>
+    </TransitionProvider>
   );
 }
-
-const App = () => (
-  <ErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <SkipToContent />
-            <Layout>
-              <Suspense fallback={<LoadingFallback />}>
-                <AnimatedRoutes />
-              </Suspense>
-            </Layout>
-          </BrowserRouter>
-        </TooltipProvider>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </ErrorBoundary>
-);
 
 export default App;
