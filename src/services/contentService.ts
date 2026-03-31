@@ -89,6 +89,22 @@ export async function getSocials() {
   }
 }
 
+// TIMELINE
+export async function getTimeline() {
+  try {
+    const { data, error } = await supabase
+      .from('timeline')
+      .select('*')
+      .order('date', { ascending: false });
+      
+    if (error || !data) return [];
+    return data;
+  } catch (e) {
+    console.error("Timeline fetch failed:", e);
+    return [];
+  }
+}
+
 // MAPPER - Safety checks for each field
 function mapSupabaseToProject(data: any[]): Project[] {
   if (!Array.isArray(data)) return [];

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { photographerInfo } from '@/data/photographer';
-import { getFeaturedProjects, getLatestBlogs, getGalleryImages, getSkills } from '@/services/contentService';
+import { getFeaturedProjects, getLatestBlogs, getGalleryImages, getSkills, getTimeline } from '@/services/contentService';
 import { ProjectCard } from '@/components/portfolio/ProjectCard';
 import { ScrollIndicator } from '@/components/ui/ScrollIndicator';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
@@ -21,7 +21,8 @@ export default function Home() {
     projects: [] as Project[], 
     blogs: [] as any[], 
     gallery: [] as any[], 
-    skills: [] as any[] 
+    skills: [] as any[],
+    timeline: [] as any[]
   });
   const [loading, setLoading] = useState(true);
 
@@ -33,14 +34,16 @@ export default function Home() {
           getFeaturedProjects(3),
           getLatestBlogs(3),
           getGalleryImages(8),
-          getSkills()
+          getSkills(),
+          getTimeline()
         ]);
         
         setData({ 
           projects: results[0].status === 'fulfilled' ? results[0].value : [],
           blogs: results[1].status === 'fulfilled' ? results[1].value : [],
           gallery: results[2].status === 'fulfilled' ? results[2].value : [],
-          skills: results[3].status === 'fulfilled' ? results[3].value : []
+          skills: results[3].status === 'fulfilled' ? results[3].value : [],
+          timeline: results[4].status === 'fulfilled' ? results[4].value : []
         });
       } catch (err) {
         console.error("Home Data Load Error:", err);
@@ -93,10 +96,10 @@ export default function Home() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 1 }}
-              className="mt-12 max-w-xl space-y-8"
+              className="mt-12 max-w-3xl space-y-8"
             >
               <p className="text-xl md:text-2xl font-black uppercase tracking-tight text-black leading-tight border-l-8 border-black pl-6">
-                BUILDER · HACKATHON WINNER · AI ENTHUSIAST
+                BUILDER, FULL STACK DEVELOPER, AI ENTHUSIAST
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -126,13 +129,10 @@ export default function Home() {
         </section>
 
         {/* Journey - Interactive Scroll Path */}
-        <JourneyTimeline />
+        <JourneyTimeline items={data.timeline} />
 
         {/* Gallery */}
         <GallerySection images={data.gallery} />
-
-        {/* Blog Feed */}
-        <BlogSection blogs={data.blogs} />
 
         {/* Skills Marquee */}
         <SkillsSection skills={data.skills} />

@@ -101,13 +101,21 @@ export default function AdminDashboard() {
       if (table === 'projects' && data.tech_stack && typeof data.tech_stack === 'string') finalData.tech_stack = data.tech_stack.split(',').map((s: string) => s.trim());
       if (table === 'blog') finalData.slug = data.title.toLowerCase().replace(/\s+/g, '-');
 
-      const { error } = await supabase.from(table).insert([finalData]);
+      // Sanitize: Remove ANY field that is NOT a table column
+      const { image, cover_image, portrait, ...payloadToInsert } = finalData;
+      
+      console.log(`[SHIP DEBUG] Table: ${table}`, payloadToInsert);
+
+      const { error } = await supabase.from(table).insert([payloadToInsert]);
       if (error) throw error;
       toast.success('Successfully Added.');
       setIsAdding(false);
       resetForm();
       fetchAllData();
-    } catch (err: any) { toast.error(err.message); } finally { setFormLoading(false); }
+    } catch (err: any) { 
+      console.error("[SHIP ERROR]:", err);
+      toast.error(err.message); 
+    } finally { setFormLoading(false); }
   };
 
   const handleDelete = async (table: string, id: string) => {

@@ -148,6 +148,13 @@ All colors MUST be HSL.
   }
 }
 
+/* GLOBAL HIGH-CONTRAST SELECTION */
+::selection {
+  background-color: #000000 !important;
+  color: #FFD600 !important;
+  -webkit-text-fill-color: #FFD600 !important;
+}
+
 @layer utilities {
   .hide-scrollbar {
     scrollbar-width: none;

@@ -10,7 +10,7 @@ export function GallerySection({ images }: { images: any[] }) {
   const featured = images.slice(0, 4);
 
   return (
-    <section className="py-24 md:py-32 bg-white px-6 md:px-12 selection:bg-primary selection:text-black">
+    <section className="pt-12 pb-24 md:pt-12 md:pb-32 bg-white px-6 md:px-12 selection:bg-primary selection:text-black">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row items-end justify-between gap-8 mb-20">
           <div className="space-y-4">

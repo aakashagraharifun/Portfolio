@@ -22,31 +22,37 @@ const DEMO_POINTS: JourneyPoint[] = [
  * MASTER JOURNEY TIMELINE - THE BUILDER PATH
  * Brutalist aesthetic with high-impact path animation.
  */
-export function JourneyTimeline() {
+export function JourneyTimeline({ items = [] }: { items?: JourneyPoint[] }) {
   const [points, setPoints] = useState<JourneyPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchTimeline() {
-      try {
-        const { data, error } = await supabase
-          .from('timeline')
-          .select('*')
-          .order('sort_order', { ascending: true });
-          
-        if (!error && data && data.length > 0) {
-          setPoints(data);
-        } else {
-          setPoints(DEMO_POINTS); // Fallback to demo points so you see the beauty immediately
+    if (items && items.length > 0) {
+      setPoints(items);
+      setLoading(false);
+    } else {
+      // Fallback/Direct fetch if needed
+      async function fetchTimeline() {
+        try {
+          const { data, error } = await supabase
+            .from('timeline')
+            .select('*')
+            .order('sort_order', { ascending: true });
+            
+          if (!error && data && data.length > 0) {
+            setPoints(data);
+          } else {
+            setPoints(DEMO_POINTS);
+          }
+        } catch (e) {
+          setPoints(DEMO_POINTS);
+        } finally {
+          setLoading(false);
         }
-      } catch (e) {
-        setPoints(DEMO_POINTS);
-      } finally {
-        setLoading(false);
       }
+      fetchTimeline();
     }
-    fetchTimeline();
-  }, []);
+  }, [items]);
 
   if (loading) return (
     <div className="h-64 flex items-center justify-center">
@@ -91,7 +97,7 @@ function TimelineContent({ points }: { points: JourneyPoint[] }) {
   const totalHeight = Math.max(1000, points.length * 250);
 
   return (
-    <section ref={containerRef} className="relative py-48 bg-white border-t-2 border-black overflow-hidden selection:bg-primary">
+    <section ref={containerRef} className="relative pt-32 pb-12 bg-white border-t-2 border-black overflow-hidden selection:bg-primary">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-32 relative z-10">
         <div className="flex flex-col items-center text-center space-y-6">
           <div className="inline-block bg-primary text-black px-4 py-2 text-xs font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_black]">THE SHIP LOG</div>
@@ -195,7 +201,7 @@ function TimelineContent({ points }: { points: JourneyPoint[] }) {
       </div>
       
       {/* Bottom spacing to anchor the timeline end */}
-      <div className="h-48" />
+      <div className="h-12" />
     </section>
   );
 }
