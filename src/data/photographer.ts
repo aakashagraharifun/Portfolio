@@ -25,8 +25,8 @@ My approach combines rapid prototyping with thoughtful architecture. I care abou
     'SkyWea'
   ],
   education: 'B.Tech CSE, Assam Royal Global University',
-  location: 'Guwahati, Assam',
-  email: 'aakashagrahari@outlook.com',
+  location: 'Guwahati, Assam • Butwal, Nepal',
+  email: 'aakashag297@gmail.com',
   phone: '',
   availability: 'Open to collaborations, freelance, and startup opportunities',
   socialLinks: {

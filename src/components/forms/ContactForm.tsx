@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { motion } from 'framer-motion';
-import { Loader2, CheckCircle2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2, CheckCircle2, Send, Sparkles, AlertCircle } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 import {
   Form,
   FormControl,
@@ -23,34 +24,18 @@ import {
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
-// Validation schema with security best practices
+// Validation schema
 const contactFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(2, { message: 'Name must be at least 2 characters' })
-    .max(100, { message: 'Name must be less than 100 characters' }),
-  email: z
-    .string()
-    .trim()
-    .email({ message: 'Please enter a valid email address' })
-    .max(255, { message: 'Email must be less than 255 characters' }),
+  name: z.string().trim().min(2, { message: 'NAME REQUIRED' }),
+  email: z.string().trim().email({ message: 'VALID EMAIL REQUIRED' }),
   projectType: z.enum(['collaboration', 'freelance', 'startup', 'other'], {
-    required_error: 'Please select a project type',
+    required_error: 'MISSION TYPE REQUIRED',
   }),
-  message: z
-    .string()
-    .trim()
-    .min(10, { message: 'Message must be at least 10 characters' })
-    .max(1000, { message: 'Message must be less than 1000 characters' }),
+  message: z.string().trim().min(10, { message: 'TELL ME THE STORY (min 10 chars)' }),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
-/**
- * Contact form component with validation and error handling
- * Uses react-hook-form + zod for type-safe validation
- */
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -67,193 +52,200 @@ export function ContactForm() {
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
-    
     try {
-      // Formspree integration - replace YOUR_FORM_ID with your actual form ID
-      const response = await fetch('https://formspree.io/f/YOUR_FORM_ID', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: data.name,
-          email: data.email,
-          projectType: data.projectType,
-          message: data.message,
-          _subject: `New ${data.projectType} inquiry from ${data.name}`,
-        }),
-      });
+      const { error } = await supabase.from('messages').insert([{
+        name: data.name,
+        email: data.email,
+        project_type: data.projectType,
+        message: data.message,
+        status: 'unread'
+      }]);
 
-      if (!response.ok) {
-        throw new Error('Failed to send message');
-      }
+      if (error) throw error;
 
-      // Show success state
       setIsSuccess(true);
       form.reset();
-
-      // Reset success message after 5 seconds
-      setTimeout(() => {
-        setIsSuccess(false);
-      }, 5000);
-    } catch (error) {
-      form.setError('root', {
-        message: 'Failed to send message. Please try again.',
-      });
+      setTimeout(() => setIsSuccess(false), 8000);
+    } catch (error: any) {
+      form.setError('root', { message: 'TRANSMISSION FAILED. TRY AGAIN.' });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Show success message
-  if (isSuccess) {
-    return (
-      <motion.div
-        className="bg-accent border border-border rounded-sm p-8 text-center space-y-4"
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-        >
-          <CheckCircle2 className="size-16 mx-auto text-green-600 dark:text-green-400" />
-        </motion.div>
-        <h3 className="text-2xl font-light tracking-wide">Message Sent!</h3>
-        <p className="text-muted-foreground font-light leading-relaxed">
-          Thank you for reaching out. I'll get back to you as soon as possible.
-        </p>
-      </motion.div>
-    );
-  }
-
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        {/* Name Field */}
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-light tracking-wide">
-                Name
-              </FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Your full name"
-                  className="font-light"
-                  {...field}
+    <div className="relative">
+      <AnimatePresence mode="wait">
+        {isSuccess ? (
+          <motion.div
+            key="success"
+            className="bg-primary border-4 border-black p-12 text-center space-y-6 shadow-[16px_16px_0px_black]"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -20 }}
+          >
+            <div className="size-20 bg-black rounded-full mx-auto flex items-center justify-center">
+              <CheckCircle2 className="size-10 text-primary" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-4xl font-black uppercase tracking-tighter italic leading-none">
+                MISSION <br />LOGGED.
+              </h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">
+                TRANSITIONING TO RESPONSE PHASE...
+              </p>
+            </div>
+            <Button 
+              onClick={() => setIsSuccess(false)}
+              className="bg-black text-primary font-black uppercase tracking-widest h-12"
+            >
+              SEND ANOTHER
+            </Button>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="form"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+                <div className="grid md:grid-cols-2 gap-8">
+                  {/* Name Field */}
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel className="text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-2">
+                          NAME
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="YOUR NAME"
+                            className="bg-white border-4 border-black h-16 font-black uppercase tracking-tighter text-xl focus-visible:ring-primary rounded-none shadow-[8px_8px_0px_black]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-[10px] font-black uppercase italic" />
+                      </FormItem>
+                    )}
+                  />
+
+                  {/* Email Field */}
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem className="space-y-3">
+                        <FormLabel className="text-[10px] font-black uppercase tracking-[0.3em]">
+                          E-MAIL
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="EMAIL@DOMAIN.COM"
+                            className="bg-white border-4 border-black h-16 font-black uppercase tracking-tighter text-xl focus-visible:ring-primary rounded-none shadow-[8px_8px_0px_black]"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-[10px] font-black uppercase italic" />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {/* Project Type Select */}
+                <FormField
+                  control={form.control}
+                  name="projectType"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel className="text-[10px] font-black uppercase tracking-[0.3em]">
+                        MISSION_CATEGORY
+                      </FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="bg-white border-4 border-black h-16 font-black uppercase tracking-tighter text-xl focus:ring-primary rounded-none shadow-[8px_8px_0px_black]">
+                            <SelectValue placeholder="SELECT TYPE" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-white border-4 border-black rounded-none">
+                          <SelectItem value="collaboration" className="font-black uppercase tracking-widest text-xs py-3 focus:bg-primary">
+                            COLLABORATION
+                          </SelectItem>
+                          <SelectItem value="freelance" className="font-black uppercase tracking-widest text-xs py-3 focus:bg-primary">
+                            FREELANCE
+                          </SelectItem>
+                          <SelectItem value="startup" className="font-black uppercase tracking-widest text-xs py-3 focus:bg-primary">
+                            STARTUP
+                          </SelectItem>
+                          <SelectItem value="other" className="font-black uppercase tracking-widest text-xs py-3 focus:bg-primary">
+                            OTHER
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-[10px] font-black uppercase italic" />
+                    </FormItem>
+                  )}
                 />
-              </FormControl>
-              <FormMessage className="text-xs font-light" />
-            </FormItem>
-          )}
-        />
 
-        {/* Email Field */}
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-light tracking-wide">
-                Email
-              </FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="your.email@example.com"
-                  className="font-light"
-                  {...field}
+                {/* Message Textarea */}
+                <FormField
+                  control={form.control}
+                  name="message"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3">
+                      <FormLabel className="text-[10px] font-black uppercase tracking-[0.3em]">
+                        MISSION_DESCRIPTION
+                      </FormLabel>
+                      <FormControl>
+                        <Textarea
+                          placeholder="THE STORY..."
+                          className="min-h-[200px] bg-white border-4 border-black font-medium text-lg focus-visible:ring-primary rounded-none p-6 shadow-[8px_8px_0px_black] resize-none"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage className="text-[10px] font-black uppercase italic" />
+                    </FormItem>
+                  )}
                 />
-              </FormControl>
-              <FormMessage className="text-xs font-light" />
-            </FormItem>
-          )}
-        />
 
-        {/* Project Type Select */}
-        <FormField
-          control={form.control}
-          name="projectType"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-light tracking-wide">
-                Project Type
-              </FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger className="font-light">
-                    <SelectValue placeholder="Select project type" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent className="bg-popover z-50">
-                  <SelectItem value="collaboration" className="font-light">
-                    Collaboration
-                  </SelectItem>
-                  <SelectItem value="freelance" className="font-light">
-                    Freelance
-                  </SelectItem>
-                  <SelectItem value="startup" className="font-light">
-                    Startup
-                  </SelectItem>
-                  <SelectItem value="other" className="font-light">
-                    Other
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <FormMessage className="text-xs font-light" />
-            </FormItem>
-          )}
-        />
+                {/* Root Error Message */}
+                {form.formState.errors.root && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="p-4 bg-red-50 border-2 border-red-600 flex items-center gap-3 text-red-600 font-black uppercase text-[10px] tracking-widest"
+                  >
+                    <AlertCircle className="size-4" />
+                    {form.formState.errors.root.message}
+                  </motion.div>
+                )}
 
-        {/* Message Textarea */}
-        <FormField
-          control={form.control}
-          name="message"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-sm font-light tracking-wide">
-                Message
-              </FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Tell me about your project..."
-                  className="min-h-32 font-light resize-none"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className="text-xs font-light" />
-            </FormItem>
-          )}
-        />
-
-        {/* Root Error Message */}
-        {form.formState.errors.root && (
-          <div className="text-sm text-destructive font-light">
-            {form.formState.errors.root.message}
-          </div>
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full h-20 bg-primary text-black border-4 border-black font-black uppercase text-xl italic tracking-tighter hover:translate-x-2 hover:-translate-y-2 hover:shadow-[12px_12px_0px_black] transition-all duration-300 enabled:active:scale-95"
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center gap-4">
+                      <Loader2 className="size-6 animate-spin" />
+                      TRANSMITTING...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-4">
+                      INITIATE TRANSMISSION <Send className="size-6" />
+                    </div>
+                  )}
+                </Button>
+              </form>
+            </Form>
+          </motion.div>
         )}
-
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          className="w-full py-6 text-base font-light tracking-wide"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="mr-2 size-5 animate-spin" />
-              Sending...
-            </>
-          ) : (
-            'Send Message'
-          )}
-        </Button>
-      </form>
-    </Form>
+      </AnimatePresence>
+    </div>
   );
 }

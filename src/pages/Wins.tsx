@@ -81,7 +81,7 @@ export default function Wins() {
                     </h2>
                     <div className="flex items-center gap-2">
                        <Award className="size-4 text-primary" />
-                       <span className="text-xs font-black uppercase tracking-widest text-black/40 italic">CONTEST VICTORY</span>
+                       <span className="text-xs font-black uppercase tracking-widest text-black/40 italic">VICTORY</span>
                     </div>
                   </div>
 
@@ -89,7 +89,7 @@ export default function Wins() {
                   <div className="border-4 border-black bg-white p-8 md:p-10 shadow-[12px_12px_0px_black] group-hover:shadow-[16px_16px_0px_rgba(255,214,0,1)] transition-all duration-500">
                     <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/30 mb-6 flex items-center gap-2">
                       <Sparkles className="size-3" />
-                      COMPETITION DETAILS
+                      DETAILS
                     </p>
                     <p className="text-lg md:text-xl font-medium leading-relaxed text-black/80">
                       {win.description}

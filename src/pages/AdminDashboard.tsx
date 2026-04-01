@@ -11,12 +11,15 @@ import { isPinnedText, setPinnedText, stripPinnedMarker } from '@/lib/pinnedCont
 import { 
   Plus, Trash2, LogOut, Loader2, Image as ImageIcon, ExternalLink, 
   Github, Code2, Trophy, Rocket, GraduationCap, Briefcase, 
-  Sparkles, History, Send, Camera, BookOpen, Layers, Share2, User, Star, Pencil
+  Sparkles, History, Send, Camera, BookOpen, Layers, Share2, User, Star, Pencil,
+  CheckCircle2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('projects');
   const [isAdding, setIsAdding] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const navigate = useNavigate();
@@ -49,6 +52,7 @@ export default function AdminDashboard() {
   const [skills, setSkills] = useState<any[]>([]);
   const [socials, setSocials] = useState<any[]>([]);
   const [wins, setWins] = useState<any[]>([]);
+  const [messages, setMessages] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
 
   // Form States
@@ -308,7 +312,8 @@ export default function AdminDashboard() {
         supabase.from('skills').select('*').order('name', { ascending: true }),
         supabase.from('socials').select('*').order('platform', { ascending: true }),
         supabase.from('wins').select('*').order('created_at', { ascending: false }),
-        supabase.from('profile').select('*').single()
+        supabase.from('profile').select('*').single(),
+        supabase.from('messages').select('*').order('created_at', { ascending: false })
       ]);
 
       setProjects(results[0].status === 'fulfilled' ? (results[0].value.data || []) : []);
@@ -324,12 +329,22 @@ export default function AdminDashboard() {
         setProfile(p);
         setProfileForm({ name: p.name, tagline: p.tagline, bio: p.bio, location: p.location, portrait: null });
       }
+
+      setMessages(results[8].status === 'fulfilled' ? (results[8].value.data || []) : []);
     } catch (err: any) { toast.error("Data Load Issue: " + err.message); } finally { setLoading(false); }
   }
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate('/admin');
+  };
+
+  const handleMarkRead = async (id: string, status: string = 'read') => {
+    try {
+      const { error } = await supabase.from('messages').update({ status }).match({ id });
+      if (error) throw error;
+      fetchAllData();
+    } catch (err: any) { toast.error(err.message); }
   };
 
   const uploadFile = async (file: File, bucket: string) => {
@@ -455,10 +470,10 @@ export default function AdminDashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-12 md:px-12 pb-48">
-        <Tabs defaultValue="projects" className="space-y-16">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-16">
           <div className="overflow-x-auto hide-scrollbar -mx-6 px-6 border-b-2 border-border mb-12">
             <TabsList className="bg-transparent gap-10 border-none h-auto p-0 mb-0">
-              {['projects', 'wins', 'timeline', 'gallery', 'blog', 'skills', 'socials', 'identity'].map(tab => (
+              {['inbox', 'projects', 'wins', 'timeline', 'gallery', 'blog', 'skills', 'socials', 'identity'].map(tab => (
                 <TabsTrigger 
                   key={tab} 
                   value={tab} 
@@ -469,6 +484,80 @@ export default function AdminDashboard() {
               ))}
             </TabsList>
           </div>
+
+          {/* INBOX */}
+          <TabsContent value="inbox" className="space-y-12 animate-in fade-in slide-in-from-bottom-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-4xl font-black uppercase tracking-tighter italic">Incoming Inbox</h2>
+              <span className="bg-black text-primary px-4 py-2 font-black text-[10px] uppercase tracking-widest">
+                {messages.filter(m => m.status === 'unread').length} NEW LEADS
+              </span>
+            </div>
+
+            <div className="grid gap-6">
+              {messages.length > 0 ? messages.map(msg => (
+                <div 
+                  key={msg.id} 
+                  className={cn(
+                    "p-8 border-4 border-black bg-white transition-all duration-300",
+                    msg.status === 'unread' ? "shadow-[12px_12px_0px_rgba(255,214,0,1)] border-primary bg-primary/5" : "opacity-60"
+                  )}
+                >
+                  <div className="flex flex-col md:flex-row justify-between items-start gap-6">
+                    <div className="space-y-4 flex-1">
+                      <div className="flex flex-wrap items-center gap-3">
+                        {msg.status === 'unread' && (
+                          <span className="bg-black text-white px-2 py-1 text-[8px] font-black uppercase">NEW</span>
+                        )}
+                        <span className="bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest border border-black">
+                          {msg.project_type}
+                        </span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-black/40 italic">
+                          {new Date(msg.created_at).toLocaleString()}
+                        </span>
+                      </div>
+                      
+                      <div>
+                        <h4 className="text-2xl font-black uppercase tracking-tighter leading-none mb-1">
+                          {msg.name}
+                        </h4>
+                        <a href={`mailto:${msg.email}`} className="text-xs font-black uppercase tracking-widest border-b-2 border-primary hover:border-black transition-all">
+                          {msg.email}
+                        </a>
+                      </div>
+
+                      <div className="bg-white border-2 border-black p-6 font-medium text-lg leading-relaxed shadow-[6px_6px_0px_black]">
+                        {msg.message}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-row md:flex-col gap-2">
+                      <Button 
+                        onClick={() => handleMarkRead(msg.id, msg.status === 'unread' ? 'read' : 'unread')}
+                        variant="ghost" 
+                        className="text-black hover:bg-primary border-2 border-transparent hover:border-black"
+                      >
+                        {msg.status === 'unread' ? <CheckCircle2 className="size-5" /> : <Loader2 className="size-5" />}
+                      </Button>
+                      <Button 
+                        onClick={() => handleDelete('messages', msg.id)}
+                        variant="ghost" 
+                        className="text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="size-5" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div className="py-24 text-center border-4 border-black border-dashed">
+                   <Send className="size-16 mx-auto text-black/10 mb-6" />
+                   <h3 className="text-2xl font-black uppercase italic">Silence in the Inbox</h3>
+                   <p className="text-black/40 uppercase text-xs font-bold tracking-widest mt-2">Zero missions logged at this time.</p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
 
           {/* PROJECTS */}
           <TabsContent value="projects" className="space-y-12 animate-in fade-in slide-in-from-bottom-2">

@@ -47,7 +47,7 @@ export default function About() {
       />
       
       <div className="min-h-screen bg-white">
-        <section className="pt-48 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
+        <section className="pt-32 md:pt-40 pb-24 px-6 md:px-12 max-w-7xl mx-auto">
           <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-20 items-start">
             
             <motion.div 
