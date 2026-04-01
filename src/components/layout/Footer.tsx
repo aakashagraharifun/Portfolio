@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { getSocials } from '@/services/contentService';
-import { Github, Twitter, Linkedin, Mail, ExternalLink, ArrowUpRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { ArrowUpRight } from 'lucide-react';
+import { getSocialHref, getSocialIcon } from '@/lib/socialPlatforms';
 
 /**
  * MASTER DYNAMIC FOOTER
@@ -19,15 +18,6 @@ export function Footer() {
     }
     loadLinks();
   }, []);
-
-  const getIcon = (platform: string) => {
-    const p = platform.toLowerCase();
-    if (p.includes('git')) return Github;
-    if (p.includes('twit')) return Twitter;
-    if (p.includes('linke')) return Linkedin;
-    if (p.includes('mail') || p.includes('emai')) return Mail;
-    return ExternalLink;
-  };
 
   return (
     <footer className="bg-white border-t-2 border-black selection:bg-primary pt-24 pb-12">
@@ -58,11 +48,11 @@ export function Footer() {
             <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-8">LIVE CHANNELS</h4>
             <div className="flex flex-col gap-4">
               {socials.length > 0 ? socials.map((social) => {
-                const Icon = getIcon(social.platform);
+                const Icon = getSocialIcon(social.platform);
                 return (
                   <a 
                     key={social.id} 
-                    href={social.url} 
+                    href={getSocialHref(social.platform, social.url)} 
                     target="_blank" 
                     rel="noreferrer"
                     className="flex justify-between items-center group text-sm font-black uppercase text-black"

@@ -4,6 +4,7 @@ import { photographerInfo } from '@/data/photographer';
 import { ContactForm } from '@/components/forms/ContactForm';
 import { Separator } from '@/components/ui/separator';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { getSocialHref } from '@/lib/socialPlatforms';
 
 /**
  * Contact page with form and contact information
@@ -89,7 +90,9 @@ export default function Contact() {
                       Email
                     </p>
                     <a
-                      href={`mailto:${photographerInfo.email}`}
+                      href={getSocialHref('email', photographerInfo.email)}
+                      target="_blank"
+                      rel="noreferrer"
                       className="text-base md:text-lg font-light hover:text-muted-foreground transition-colors"
                     >
                       {photographerInfo.email}

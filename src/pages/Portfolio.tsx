@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getAllProjects } from '@/services/projectService';
 import { PortfolioGrid } from '@/components/portfolio/PortfolioGrid';
+import { ProjectPreviewModal } from '@/components/portfolio/ProjectPreviewModal';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
@@ -13,6 +14,7 @@ import { Project } from '@/types';
 export default function Portfolio() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
     async function loadProjects() {
@@ -56,7 +58,7 @@ export default function Portfolio() {
             <Loader2 className="size-16 animate-spin opacity-20 text-primary" />
           </div>
         ) : projects.length > 0 ? (
-          <PortfolioGrid projects={projects} />
+          <PortfolioGrid projects={projects} onOpenProject={setSelectedProject} />
         ) : (
           <div className="text-center py-24 space-y-4">
             <p className="text-muted-foreground font-light">The archive is currently empty.</p>
@@ -67,6 +69,12 @@ export default function Portfolio() {
 
         {/* Bottom spacing */}
         <div className="h-24" />
+
+        <ProjectPreviewModal
+          project={selectedProject}
+          isOpen={Boolean(selectedProject)}
+          onClose={() => setSelectedProject(null)}
+        />
       </div>
     </>
   );

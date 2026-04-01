@@ -1,10 +1,37 @@
 import { supabase } from '@/lib/supabase';
+import { isPinnedText, sortPinnedFirst, stripPinnedMarker } from '@/lib/pinnedContent';
 import { Project, ProjectCategory } from '@/types';
 
 /**
  * MASTER CONTENT SERVICE - STABLE VERSION
  * Optimized with safety guards to prevent UI crashes if tables are missing
  */
+
+function normalizeGalleryItems(data: any[]) {
+  if (!Array.isArray(data)) return [];
+
+  return sortPinnedFirst(
+    data.map((item) => ({
+      ...item,
+      caption: stripPinnedMarker(item.caption) || '',
+      isPinned: isPinnedText(item.caption)
+    })),
+    (item) => Boolean(item.isPinned)
+  );
+}
+
+function normalizeTimelineItems(data: any[]) {
+  if (!Array.isArray(data)) return [];
+
+  return sortPinnedFirst(
+    data.map((item) => ({
+      ...item,
+      title: stripPinnedMarker(item.title) || 'Untitled Milestone',
+      isPinned: isPinnedText(item.title)
+    })),
+    (item) => Boolean(item.isPinned)
+  );
+}
 
 // PROJECTS
 export async function getFeaturedProjects(limit = 4): Promise<Project[]> {
@@ -13,10 +40,12 @@ export async function getFeaturedProjects(limit = 4): Promise<Project[]> {
       .from('projects')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(limit);
+      .limit(100);
       
     if (error || !data) return [];
-    return mapSupabaseToProject(data);
+    return mapSupabaseToProject(data)
+      .filter((project) => project.isPinned)
+      .slice(0, limit);
   } catch (e) {
     console.error("Project fetch failed:", e);
     return [];
@@ -41,16 +70,18 @@ export async function getLatestBlogs(limit = 3) {
 }
 
 // GALLERY
-export async function getGalleryImages(limit = 8) {
+export async function getGalleryImages(limit?: number, pinnedOnly = false) {
   try {
     const { data, error } = await supabase
       .from('gallery')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(limit);
+      .order('created_at', { ascending: false });
       
     if (error || !data) return [];
-    return data;
+
+    const normalized = normalizeGalleryItems(data);
+    const filtered = pinnedOnly ? normalized.filter((item) => item.isPinned) : normalized;
+    return typeof limit === 'number' ? filtered.slice(0, limit) : filtered;
   } catch (e) {
     console.error("Gallery fetch failed:", e);
     return [];
@@ -90,25 +121,45 @@ export async function getSocials() {
 }
 
 // TIMELINE
-export async function getTimeline() {
+export async function getTimeline(pinnedOnly = false) {
   try {
     const { data, error } = await supabase
       .from('timeline')
       .select('*')
-      .order('date', { ascending: false });
+      .order('sort_order', { ascending: true });
       
     if (error || !data) return [];
-    return data;
+
+    const normalized = normalizeTimelineItems(data);
+    return pinnedOnly ? normalized.filter((item) => item.isPinned) : normalized;
   } catch (e) {
     console.error("Timeline fetch failed:", e);
     return [];
   }
 }
 
+export async function getHomepageTimeline(minCount = 6, maxCount = 8) {
+  const items = await getTimeline(false);
+  if (!Array.isArray(items) || items.length === 0) return [];
+
+  const pinnedItems = items.filter((item) => item.isPinned);
+  const unpinnedItems = items.filter((item) => !item.isPinned);
+
+  if (pinnedItems.length >= maxCount) {
+    return pinnedItems.slice(0, maxCount);
+  }
+
+  if (pinnedItems.length >= minCount) {
+    return pinnedItems.slice(0, maxCount);
+  }
+
+  return [...pinnedItems, ...unpinnedItems].slice(0, Math.min(maxCount, Math.max(minCount, pinnedItems.length)));
+}
+
 // MAPPER - Safety checks for each field
 function mapSupabaseToProject(data: any[]): Project[] {
   if (!Array.isArray(data)) return [];
-  return data.map(p => ({
+  return sortPinnedFirst(data.map(p => ({
     id: p.id,
     title: p.title || 'Untitled Project',
     slug: p.slug || 'untitled',
@@ -122,6 +173,7 @@ function mapSupabaseToProject(data: any[]): Project[] {
     liveUrl: p.live_url || '',
     githubUrl: p.github_url || '',
     techStack: Array.isArray(p.tech_stack) ? p.tech_stack : [],
-    highlight: p.highlight || undefined
-  }));
+    highlight: stripPinnedMarker(p.highlight) || undefined,
+    isPinned: isPinnedText(p.highlight)
+  })), (project) => Boolean(project.isPinned));
 }

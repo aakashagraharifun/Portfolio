@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { isPinnedText, sortPinnedFirst, stripPinnedMarker } from '@/lib/pinnedContent';
 import { Project, ProjectCategory } from '@/types';
 
 /**
@@ -16,23 +17,24 @@ export async function getAllProjects(): Promise<Project[]> {
     return [];
   }
 
-  return mapSupabaseToProject(data);
+  return sortPinnedFirst(mapSupabaseToProject(data), (project) => Boolean(project.isPinned));
 }
 
 export async function getFeaturedProjects(limit = 4): Promise<Project[]> {
   const { data, error } = await supabase
     .from('projects')
     .select('*')
-    .not('highlight', 'is', null) // Only featured/highlighted projects
     .order('created_at', { ascending: false })
-    .limit(limit);
+    .limit(100);
 
   if (error) {
     console.error('Error fetching featured projects:', error);
     return [];
   }
 
-  return mapSupabaseToProject(data);
+  return mapSupabaseToProject(data)
+    .filter((project) => project.isPinned)
+    .slice(0, limit);
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
@@ -69,6 +71,7 @@ function mapSupabaseToProject(data: any[]): Project[] {
     liveUrl: p.live_url || '',
     githubUrl: p.github_url || '',
     techStack: Array.isArray(p.tech_stack) ? p.tech_stack : [],
-    highlight: p.highlight || undefined
+    highlight: stripPinnedMarker(p.highlight) || undefined,
+    isPinned: isPinnedText(p.highlight)
   }));
 }

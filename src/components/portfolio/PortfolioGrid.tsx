@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Project } from '@/types';
 import { ProjectCard } from './ProjectCard';
 
 interface PortfolioGridProps {
   projects: Project[];
+  onOpenProject?: (project: Project) => void;
 }
 
 /**
@@ -12,7 +12,7 @@ interface PortfolioGridProps {
  * Uniform rows with consistent spacing
  * Responsive: 3 columns desktop, 2 tablet, 1 mobile
  */
-export function PortfolioGrid({ projects }: PortfolioGridProps) {
+export function PortfolioGrid({ projects, onOpenProject }: PortfolioGridProps) {
   return (
     <motion.div
       layout
@@ -37,6 +37,7 @@ export function PortfolioGrid({ projects }: PortfolioGridProps) {
               aspectRatio="landscape"
               showCategory={true}
               index={index}
+              onOpen={onOpenProject}
             />
           </motion.div>
         ))}

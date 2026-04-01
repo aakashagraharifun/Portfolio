@@ -1,7 +1,7 @@
 import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import { GraduationCap, Trophy, Rocket, Briefcase, Sparkles, Loader2, ArrowDown } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
+import { getTimeline } from '@/services/contentService';
 
 interface JourneyPoint {
   id: string;
@@ -22,24 +22,21 @@ const DEMO_POINTS: JourneyPoint[] = [
  * MASTER JOURNEY TIMELINE - THE BUILDER PATH
  * Brutalist aesthetic with high-impact path animation.
  */
-export function JourneyTimeline({ items = [] }: { items?: JourneyPoint[] }) {
+export function JourneyTimeline({ items }: { items?: JourneyPoint[] }) {
   const [points, setPoints] = useState<JourneyPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (items && items.length > 0) {
+    if (Array.isArray(items)) {
       setPoints(items);
       setLoading(false);
     } else {
       // Fallback/Direct fetch if needed
       async function fetchTimeline() {
         try {
-          const { data, error } = await supabase
-            .from('timeline')
-            .select('*')
-            .order('sort_order', { ascending: true });
-            
-          if (!error && data && data.length > 0) {
+          const data = await getTimeline();
+
+          if (data && data.length > 0) {
             setPoints(data);
           } else {
             setPoints(DEMO_POINTS);

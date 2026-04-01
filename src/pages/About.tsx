@@ -3,7 +3,8 @@ import { motion } from 'framer-motion';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { supabase } from '@/lib/supabase';
 import { getSocials } from '@/services/contentService';
-import { Github, Linkedin, Mail, Loader2 } from 'lucide-react';
+import { ArrowUpRight, Loader2 } from 'lucide-react';
+import { getSocialHref, getSocialIcon } from '@/lib/socialPlatforms';
 
 /**
  * MASTER ABOUT PAGE - 100% DYNAMIC BUILDER PROFILE
@@ -31,11 +32,6 @@ export default function About() {
     }
     loadIdentity();
   }, []);
-
-  const getPlatformLink = (platform: string) => {
-    const s = socials.find(s => s.platform.toLowerCase().includes(platform.toLowerCase()));
-    return s ? s.url : '#';
-  };
 
   if (loading) return (
     <div className="h-screen w-full flex items-center justify-center">
@@ -95,16 +91,28 @@ export default function About() {
                  </div>
               </div>
 
-              <div className="flex gap-6 pt-8">
-                 <a href={getPlatformLink('github')} target="_blank" rel="noreferrer" className="size-16 border-2 border-black flex items-center justify-center hover:bg-black hover:text-primary transition-all">
-                    <Github className="size-6" />
-                 </a>
-                 <a href={getPlatformLink('linkedin')} target="_blank" rel="noreferrer" className="size-16 border-2 border-black flex items-center justify-center hover:bg-black hover:text-primary transition-all">
-                    <Linkedin className="size-6" />
-                 </a>
-                 <a href={getPlatformLink('mail')} target="_blank" rel="noreferrer" className="size-16 border-2 border-black flex items-center justify-center hover:bg-black hover:text-primary transition-all">
-                    <Mail className="size-6" />
-                 </a>
+              <div className="flex flex-wrap gap-4 pt-8">
+                 {socials.length > 0 ? socials.map((social) => {
+                   const Icon = getSocialIcon(social.platform);
+
+                   return (
+                     <a
+                       key={social.id}
+                       href={getSocialHref(social.platform, social.url)}
+                       target="_blank"
+                       rel="noreferrer"
+                       className="group flex h-16 items-center gap-4 border-2 border-black px-5 hover:bg-black hover:text-primary transition-all"
+                     >
+                       <Icon className="size-5" />
+                       <span className="text-xs font-black uppercase tracking-[0.24em]">{social.platform}</span>
+                       <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                     </a>
+                   );
+                 }) : (
+                   <p className="text-sm font-black uppercase tracking-[0.2em] text-black/40">
+                     Add your socials in Admin to show them here.
+                   </p>
+                 )}
               </div>
             </motion.div>
 

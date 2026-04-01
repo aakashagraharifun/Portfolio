@@ -31,6 +31,7 @@ export interface Project {
   githubUrl?: string;
   techStack?: string[];
   highlight?: string;
+  isPinned?: boolean;
 }
 
 export interface PhotographerInfo {

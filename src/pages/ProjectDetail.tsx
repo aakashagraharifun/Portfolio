@@ -116,7 +116,7 @@ export default function ProjectDetail() {
           <Separator />
 
           <div className="space-y-4">
-            <p className="text-lg md:text-xl font-light leading-relaxed text-foreground">
+            <p className="whitespace-pre-wrap break-words text-lg md:text-xl font-light leading-relaxed text-foreground">
               {project.description}
             </p>
           </div>

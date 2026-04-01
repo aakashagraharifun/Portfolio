@@ -45,6 +45,11 @@ export default function Gallery() {
                 onClick={() => setSelectedImg(img.image_url)}
                 className="relative group cursor-pointer border-4 border-black overflow-hidden bg-primary"
               >
+                {img.isPinned && (
+                  <div className="absolute left-4 top-4 z-10 border-2 border-black bg-white px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-black">
+                    Pinned
+                  </div>
+                )}
                 <img 
                   src={img.image_url} 
                   alt={img.caption} 

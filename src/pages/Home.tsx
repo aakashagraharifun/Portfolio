@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { photographerInfo } from '@/data/photographer';
-import { getFeaturedProjects, getLatestBlogs, getGalleryImages, getSkills, getTimeline } from '@/services/contentService';
+import { getFeaturedProjects, getHomepageTimeline, getLatestBlogs, getGalleryImages, getSkills } from '@/services/contentService';
 import { ProjectCard } from '@/components/portfolio/ProjectCard';
+import { ProjectPreviewModal } from '@/components/portfolio/ProjectPreviewModal';
 import { ScrollIndicator } from '@/components/ui/ScrollIndicator';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { SEOHead } from '@/components/seo/SEOHead';
@@ -25,17 +26,18 @@ export default function Home() {
     timeline: [] as any[]
   });
   const [loading, setLoading] = useState(true);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
     async function loadHomeData() {
       try {
         // Using Promise.allSettled so one failing fetch doesn't crash the WHOLE site
         const results = await Promise.allSettled([
-          getFeaturedProjects(3),
+          getFeaturedProjects(4),
           getLatestBlogs(3),
-          getGalleryImages(8),
+          getGalleryImages(8, true),
           getSkills(),
-          getTimeline()
+          getHomepageTimeline(6, 8)
         ]);
         
         setData({ 
@@ -115,24 +117,32 @@ export default function Home() {
         </section>
 
         {/* Feature Projects with BIG TYPE */}
-        <section className="py-24 md:py-32 bg-white">
-          <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-20 space-y-4">
-               <div className="bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-block border-2 border-black">SELECTED BUILDS</div>
-               <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-black leading-none italic">THE ARIVE.</h2>
-          </div>
+        {data.projects.length > 0 && (
+          <section className="py-24 md:py-32 bg-white">
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-20 space-y-4">
+                 <div className="bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-block border-2 border-black">SELECTED BUILDS</div>
+                 <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-black leading-none italic">THE ARIVE.</h2>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 md:px-8 max-w-7xl mx-auto">
-            {data.projects.map((project, index) => (
-              <ProjectCard key={project.id} project={project} aspectRatio="landscape" index={index} />
-            ))}
-          </div>
-        </section>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 md:px-8 max-w-7xl mx-auto">
+              {data.projects.map((project, index) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  aspectRatio="landscape"
+                  index={index}
+                  onOpen={setSelectedProject}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* Journey - Interactive Scroll Path */}
-        <JourneyTimeline items={data.timeline} />
+        {data.timeline.length > 0 && <JourneyTimeline items={data.timeline} />}
 
         {/* Gallery */}
-        <GallerySection images={data.gallery} />
+        {data.gallery.length > 0 && <GallerySection images={data.gallery} />}
 
         {/* Skills Marquee */}
         <SkillsSection skills={data.skills} />
@@ -146,6 +156,12 @@ export default function Home() {
                  </Link>
             </div>
         </section>
+
+        <ProjectPreviewModal
+          project={selectedProject}
+          isOpen={Boolean(selectedProject)}
+          onClose={() => setSelectedProject(null)}
+        />
       </div>
     </>
   );
