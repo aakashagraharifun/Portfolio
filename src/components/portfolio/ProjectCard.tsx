@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Project } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, ExternalLink, Github } from 'lucide-react';
 
 interface ProjectCardProps {
   project: Project;
@@ -15,6 +15,7 @@ interface ProjectCardProps {
 /**
  * BRUTALIST PROJECT CARD
  * High-impact, bold borders, yellow accents, and sharp typography
+ * Now includes direct project & GitHub links
  */
 export function ProjectCard({ 
   project, 
@@ -30,6 +31,8 @@ export function ProjectCard({
     landscape: 'aspect-[16/9]',
     square: 'aspect-square'
   };
+
+  const hasExternalLinks = project.liveUrl || project.githubUrl;
 
   return (
     <motion.div
@@ -61,6 +64,36 @@ export function ProjectCard({
             </div>
           </div>
 
+          {/* External Link Buttons — hover-reveal, top-right */}
+          {hasExternalLinks && (
+            <div className="absolute top-4 right-4 z-20 flex gap-2 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 delay-75">
+              {project.liveUrl && (
+                <a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="size-9 bg-white border-2 border-black flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300"
+                  title="View Live"
+                >
+                  <ExternalLink className="size-4 text-black" />
+                </a>
+              )}
+              {project.githubUrl && (
+                <a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="size-9 bg-white border-2 border-black flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300"
+                  title="Source Code"
+                >
+                  <Github className="size-4 text-black" />
+                </a>
+              )}
+            </div>
+          )}
+
           {/* Bottom Label Overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
@@ -75,8 +108,35 @@ export function ProjectCard({
                 {project.year} • {project.location || "Build"}
              </p>
           </div>
-          <div className="size-12 border-2 border-border group-hover:bg-primary group-hover:border-primary flex items-center justify-center transition-all">
-             <ArrowUpRight className="size-5 text-black" />
+          <div className="flex items-center gap-2">
+            {/* Quick external links — always visible, compact */}
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="size-10 border-2 border-border flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300"
+                title="View Live"
+              >
+                <ExternalLink className="size-4 text-black" />
+              </a>
+            )}
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="size-10 border-2 border-border flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300"
+                title="Source Code"
+              >
+                <Github className="size-4 text-black" />
+              </a>
+            )}
+            <div className="size-12 border-2 border-border group-hover:bg-primary group-hover:border-primary flex items-center justify-center transition-all">
+               <ArrowUpRight className="size-5 text-black" />
+            </div>
           </div>
         </div>
       </Link>

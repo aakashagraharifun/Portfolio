@@ -30,7 +30,7 @@ My approach combines rapid prototyping with thoughtful architecture. I care abou
   phone: '',
   availability: 'Open to collaborations, freelance, and startup opportunities',
   socialLinks: {
-    github: 'https://github.com/vxwshxl',
+    github: 'https://github.com/aakashagraharifun',
     linkedin: '',
     website: 'https://aakashpoems.cloud/'
   },
