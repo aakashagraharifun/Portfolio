@@ -12,6 +12,7 @@ import { Link } from 'react-router-dom';
 import { Project } from '@/types';
 import { JourneyTimeline } from '@/components/portfolio/JourneyTimeline';
 import { GallerySection, BlogSection, SkillsSection } from '@/components/portfolio/PublicSections';
+import { F1PageLoader } from '@/components/layout/F1PageLoader';
 
 /**
  * MASTER HOMEPAGE - THE BUILDER STATEMENT
@@ -26,6 +27,7 @@ export default function Home() {
     timeline: [] as any[]
   });
   const [loading, setLoading] = useState(true);
+  const [loaderVisible, setLoaderVisible] = useState(true);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ export default function Home() {
           getLatestBlogs(3),
           getGalleryImages(8, true),
           getSkills(),
-          getHomepageTimeline(6, 8)
+          getHomepageTimeline()
         ]);
         
         setData({ 
@@ -56,13 +58,8 @@ export default function Home() {
     loadHomeData();
   }, []);
 
-  if (loading) return (
-    <div className="h-screen w-full flex items-center justify-center bg-white">
-      <div className="flex flex-col items-center gap-6">
-        <Loader2 className="size-16 animate-spin text-primary" />
-        <span className="text-[10px] font-black uppercase tracking-[0.4em] animate-pulse">INITIATING SYSTEMS...</span>
-      </div>
-    </div>
+  if (loaderVisible) return (
+    <F1PageLoader onComplete={() => setLoaderVisible(false)} />
   );
 
   return (

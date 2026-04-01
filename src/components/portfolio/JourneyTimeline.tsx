@@ -2,6 +2,7 @@ import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import { GraduationCap, Trophy, Rocket, Briefcase, Sparkles, Loader2, ArrowDown } from 'lucide-react';
 import { getTimeline } from '@/services/contentService';
+import { cn } from '@/lib/utils';
 
 interface JourneyPoint {
   id: string;
@@ -65,14 +66,17 @@ function TimelineContent({ points }: { points: JourneyPoint[] }) {
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start center", "end center"]
+    offset: ["start center", "end 80%"]
   });
 
   const pathLength = useSpring(scrollYProgress, {
-    stiffness: 80,
-    damping: 25,
+    stiffness: 40,
+    damping: 20,
     restDelta: 0.001
   });
+
+  // Much taller for more "travel time" per scroll
+  const totalHeight = Math.max(1200, points.length * 450);
 
   const getIcon = (type: string) => {
     switch (type) {
@@ -85,16 +89,15 @@ function TimelineContent({ points }: { points: JourneyPoint[] }) {
   };
 
   const getPointPosition = (index: number, total: number) => {
-     const y = (index + 0.5) * (1000 / total);
+     // Increased vertical space for easier scrolling
+     const y = (index + 0.5) * (totalHeight / total);
      // Wide oscillation for the 'Veeshal' curve feel
      const x = 500 + Math.sin(index * 2) * 280;
      return { x, y };
   };
 
-  const totalHeight = Math.max(1000, points.length * 250);
-
   return (
-    <section ref={containerRef} className="relative pt-32 pb-12 bg-white border-t-2 border-black overflow-hidden selection:bg-primary">
+    <section ref={containerRef} className="relative pt-32 pb-48 bg-white border-t-2 border-black overflow-hidden selection:bg-primary">
       <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-32 relative z-10">
         <div className="flex flex-col items-center text-center space-y-6">
           <div className="inline-block bg-primary text-black px-4 py-2 text-xs font-black uppercase tracking-widest border-2 border-black shadow-[4px_4px_0px_black]">THE SHIP LOG</div>

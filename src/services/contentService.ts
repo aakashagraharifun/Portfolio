@@ -138,22 +138,10 @@ export async function getTimeline(pinnedOnly = false) {
   }
 }
 
-export async function getHomepageTimeline(minCount = 6, maxCount = 8) {
+export async function getHomepageTimeline() {
   const items = await getTimeline(false);
-  if (!Array.isArray(items) || items.length === 0) return [];
-
-  const pinnedItems = items.filter((item) => item.isPinned);
-  const unpinnedItems = items.filter((item) => !item.isPinned);
-
-  if (pinnedItems.length >= maxCount) {
-    return pinnedItems.slice(0, maxCount);
-  }
-
-  if (pinnedItems.length >= minCount) {
-    return pinnedItems.slice(0, maxCount);
-  }
-
-  return [...pinnedItems, ...unpinnedItems].slice(0, Math.min(maxCount, Math.max(minCount, pinnedItems.length)));
+  if (!Array.isArray(items)) return [];
+  return items.filter((item) => item.isPinned);
 }
 
 // MAPPER - Safety checks for each field
