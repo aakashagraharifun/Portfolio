@@ -28,13 +28,18 @@ export default function AdminDashboard() {
     tech_stack: '',
     live_url: '',
     github_url: '',
-    cover_image: null as File | null
+    cover_image: null as File | null,
+    is_hackathon: false,
+    hackathon_name: '',
+    hackathon_description: '',
+    hackathon_position: ''
   };
-  const initialTimelineForm = { year: '2026', title: '', description: '', icon_type: 'sparkles' };
+  const initialTimelineForm = { year: '2026', title: '', description: '', icon_type: 'sparkles', sort_order: '0' };
   const initialGalleryForm = { caption: '', image: null as File | null };
   const initialBlogForm = { title: '', excerpt: '', content: '', cover_image: null as File | null };
   const initialSkillForm = { name: '', category: 'technical' };
   const initialSocialForm = { platform: '', url: '' };
+  const initialWinForm = { title: '', position: '', description: '', event_date: '2026', image: null as File | null };
 
   // Data Store
   const [projects, setProjects] = useState<any[]>([]);
@@ -43,6 +48,7 @@ export default function AdminDashboard() {
   const [blogs, setBlogs] = useState<any[]>([]);
   const [skills, setSkills] = useState<any[]>([]);
   const [socials, setSocials] = useState<any[]>([]);
+  const [wins, setWins] = useState<any[]>([]);
   const [profile, setProfile] = useState<any>(null);
 
   // Form States
@@ -52,6 +58,7 @@ export default function AdminDashboard() {
   const [blogForm, setBlogForm] = useState(initialBlogForm);
   const [skillForm, setSkillForm] = useState(initialSkillForm);
   const [socialForm, setSocialForm] = useState(initialSocialForm);
+  const [winForm, setWinForm] = useState(initialWinForm);
   const [profileForm, setProfileForm] = useState({ name: '', tagline: 'FULL STACK BUILDER.', bio: '', location: 'INDIA', portrait: null as File | null });
   const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
   const [editingTimelineId, setEditingTimelineId] = useState<string | null>(null);
@@ -59,6 +66,7 @@ export default function AdminDashboard() {
   const [editingBlogId, setEditingBlogId] = useState<string | null>(null);
   const [editingSkillId, setEditingSkillId] = useState<string | null>(null);
   const [editingSocialId, setEditingSocialId] = useState<string | null>(null);
+  const [editingWinId, setEditingWinId] = useState<string | null>(null);
 
   const slugify = (value: string) =>
     value
@@ -101,6 +109,11 @@ export default function AdminDashboard() {
     setEditingSocialId(null);
   };
 
+  const resetWinEditor = () => {
+    setWinForm(initialWinForm);
+    setEditingWinId(null);
+  };
+
   const startEditProject = (project: any) => {
     setEditingProjectId(project.id);
     setIsAdding(true);
@@ -112,7 +125,11 @@ export default function AdminDashboard() {
       tech_stack: Array.isArray(project.tech_stack) ? project.tech_stack.join(', ') : '',
       live_url: project.live_url || '',
       github_url: project.github_url || '',
-      cover_image: null
+      cover_image: null,
+      is_hackathon: project.is_hackathon || false,
+      hackathon_name: project.hackathon_name || '',
+      hackathon_description: project.hackathon_description || '',
+      hackathon_position: project.hackathon_position || ''
     });
     jumpToTop();
   };
@@ -123,7 +140,8 @@ export default function AdminDashboard() {
       year: item.year || '2026',
       title: stripPinnedMarker(item.title) || '',
       description: item.description || '',
-      icon_type: item.icon_type || 'sparkles'
+      icon_type: item.icon_type || 'sparkles',
+      sort_order: String(item.sort_order || '0')
     });
     jumpToTop();
   };
@@ -166,6 +184,18 @@ export default function AdminDashboard() {
     jumpToTop();
   };
 
+  const startEditWin = (item: any) => {
+    setEditingWinId(item.id);
+    setWinForm({
+      title: item.title || '',
+      position: item.position || '',
+      description: item.description || '',
+      event_date: item.event_date || '2026',
+      image: null
+    });
+    jumpToTop();
+  };
+
   const buildPayload = async (
     table: string,
     data: any,
@@ -178,6 +208,7 @@ export default function AdminDashboard() {
     if (file && bucket) {
       const url = await uploadFile(file, bucket);
       if (table === 'gallery') finalData.image_url = url;
+      else if (table === 'wins') finalData.certificate_url = url;
       else finalData.cover_image = url;
     }
 
@@ -196,6 +227,10 @@ export default function AdminDashboard() {
       finalData.live_url = data.live_url?.trim() || null;
       finalData.github_url = data.github_url?.trim() || null;
       finalData.slug = slugify(finalData.title);
+      finalData.is_hackathon = Boolean(data.is_hackathon);
+      finalData.hackathon_name = data.hackathon_name?.trim() || null;
+      finalData.hackathon_description = data.hackathon_description?.trim() || null;
+      finalData.hackathon_position = data.hackathon_position?.trim() || null;
     }
 
     if (table === 'timeline') {
@@ -203,6 +238,7 @@ export default function AdminDashboard() {
       finalData.title = setPinnedText(data.title?.trim() || '', isPinnedText(existingItem?.title)) || '';
       finalData.description = data.description?.trim() || '';
       finalData.icon_type = data.icon_type || 'sparkles';
+      finalData.sort_order = parseInt(data.sort_order) || 0;
     }
 
     if (table === 'gallery') {
@@ -214,6 +250,14 @@ export default function AdminDashboard() {
       finalData.excerpt = data.excerpt?.trim() || '';
       finalData.content = data.content?.trim() || '';
       finalData.slug = slugify(finalData.title);
+    }
+
+    if (table === 'wins') {
+      finalData.title = data.title?.trim() || '';
+      finalData.position = data.position?.trim() || '';
+      finalData.description = data.description?.trim() || '';
+      finalData.event_date = data.event_date?.trim() || '2026';
+      finalData.slug = slugify(`${finalData.title}-${finalData.position}`);
     }
 
     if (table === 'skills') {
@@ -234,6 +278,10 @@ export default function AdminDashboard() {
 
     if (payload.image_url === null || payload.image_url === '') {
       delete payload.image_url;
+    }
+
+    if (payload.certificate_url === null || payload.certificate_url === '') {
+      delete payload.certificate_url;
     }
 
     return payload;
@@ -259,6 +307,7 @@ export default function AdminDashboard() {
         supabase.from('blog').select('*').order('created_at', { ascending: false }),
         supabase.from('skills').select('*').order('name', { ascending: true }),
         supabase.from('socials').select('*').order('platform', { ascending: true }),
+        supabase.from('wins').select('*').order('created_at', { ascending: false }),
         supabase.from('profile').select('*').single()
       ]);
 
@@ -268,9 +317,10 @@ export default function AdminDashboard() {
       setBlogs(results[3].status === 'fulfilled' ? (results[3].value.data || []) : []);
       setSkills(results[4].status === 'fulfilled' ? (results[4].value.data || []) : []);
       setSocials(results[5].status === 'fulfilled' ? (results[5].value.data || []) : []);
+      setWins(results[6].status === 'fulfilled' ? (results[6].value.data || []) : []);
       
-      if (results[6].status === 'fulfilled' && results[6].value.data) {
-        const p = results[6].value.data;
+      if (results[7].status === 'fulfilled' && results[7].value.data) {
+        const p = results[7].value.data;
         setProfile(p);
         setProfileForm({ name: p.name, tagline: p.tagline, bio: p.bio, location: p.location, portrait: null });
       }
@@ -408,7 +458,7 @@ export default function AdminDashboard() {
         <Tabs defaultValue="projects" className="space-y-16">
           <div className="overflow-x-auto hide-scrollbar -mx-6 px-6 border-b-2 border-border mb-12">
             <TabsList className="bg-transparent gap-10 border-none h-auto p-0 mb-0">
-              {['projects', 'timeline', 'gallery', 'blog', 'skills', 'socials', 'identity'].map(tab => (
+              {['projects', 'wins', 'timeline', 'gallery', 'blog', 'skills', 'socials', 'identity'].map(tab => (
                 <TabsTrigger 
                   key={tab} 
                   value={tab} 
@@ -487,6 +537,49 @@ export default function AdminDashboard() {
                       />
                     </div>
                   </div>
+
+                  {/* HACKATHON SECTION */}
+                  <div className="bg-black/5 p-6 border-2 border-black space-y-4">
+                    <div className="flex items-center gap-3">
+                      <input 
+                        type="checkbox" 
+                        id="is_hackathon"
+                        className="size-5 accent-black cursor-pointer"
+                        checked={projectForm.is_hackathon}
+                        onChange={e => setProjectForm({...projectForm, is_hackathon: e.target.checked})}
+                      />
+                      <Label htmlFor="is_hackathon" className="text-sm font-black uppercase cursor-pointer">Hackathon Project?</Label>
+                    </div>
+
+                    {projectForm.is_hackathon && (
+                      <motion.div 
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="space-y-4 pt-4 border-t border-black/10"
+                      >
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <Input 
+                            placeholder="Hackathon Name" 
+                            className="bg-white" 
+                            value={projectForm.hackathon_name} 
+                            onChange={e => setProjectForm({...projectForm, hackathon_name: e.target.value})} 
+                          />
+                          <Input 
+                            placeholder="Position (e.g. Winner, Runner Up)" 
+                            className="bg-white" 
+                            value={projectForm.hackathon_position} 
+                            onChange={e => setProjectForm({...projectForm, hackathon_position: e.target.value})} 
+                          />
+                        </div>
+                        <Textarea 
+                          placeholder="Hackathon Experience / Description" 
+                          className="bg-white min-h-[80px]" 
+                          value={projectForm.hackathon_description} 
+                          onChange={e => setProjectForm({...projectForm, hackathon_description: e.target.value})} 
+                        />
+                      </motion.div>
+                    )}
+                  </div>
                   {activeProject?.cover_image && editingProjectId && (
                     <div className="space-y-3">
                       <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/60">Current Cover</p>
@@ -558,6 +651,90 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
+          {/* WINS */}
+          <TabsContent value="wins" className="space-y-12 animate-in fade-in slide-in-from-bottom-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-4xl font-black uppercase tracking-tighter italic">Wins</h2>
+              <Button
+                onClick={() => (editingWinId || isAdding) ? resetWinEditor() : setIsAdding(true)}
+                className="bg-black text-primary h-12 font-black uppercase"
+              >
+                {editingWinId ? 'CANCEL EDIT' : isAdding ? 'CANCEL' : 'ADD NEW WIN'}
+              </Button>
+            </div>
+            {(isAdding || Boolean(editingWinId)) && (
+               <form
+                 onSubmit={(e) => {
+                   e.preventDefault();
+                   if (editingWinId) {
+                     handleUpdate('wins', editingWinId, winForm, resetWinEditor, winForm.image as File, 'project-images');
+                   } else {
+                     handleCreate('wins', winForm, resetWinEditor, winForm.image as File, 'project-images');
+                   }
+                 }}
+                 className="bg-primary p-12 border-4 border-black space-y-6"
+               >
+                  <h3 className="text-xl font-black uppercase tracking-[0.2em] text-black">
+                    {editingWinId ? 'Edit Hackathon Win' : 'Ship New Victory'}
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <Input placeholder="Hackathon / Event Name" className="bg-white h-14" value={winForm.title} onChange={e => setWinForm({...winForm, title: e.target.value})} />
+                    <Input placeholder="Position (e.g. Winner, First Runner Up)" className="bg-white h-14" value={winForm.position} onChange={e => setWinForm({...winForm, position: e.target.value})} />
+                  </div>
+                  <Input placeholder="Event Date / Year" className="bg-white h-14" value={winForm.event_date} onChange={e => setWinForm({...winForm, event_date: e.target.value})} />
+                  <Textarea placeholder="The Winning Story / Hackathon Details" className="bg-white min-h-[150px] text-black" value={winForm.description} onChange={e => setWinForm({...winForm, description: e.target.value})} />
+                  
+                  {wins.find(w => w.id === editingWinId)?.certificate_url && (
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-black/60">Current Certificate</p>
+                      <img src={wins.find(w => w.id === editingWinId).certificate_url} className="h-32 w-auto object-contain border-2 border-black bg-white" />
+                    </div>
+                  )}
+                  
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-black/60">Upload Certificate Image</Label>
+                    <Input type="file" className="bg-white h-auto" onChange={e => setWinForm({...winForm, image: e.target.files?.[0] || null})} />
+                  </div>
+                  
+                  <Button disabled={formLoading} className="w-full bg-black text-primary h-14 font-black">
+                    {editingWinId ? 'UPDATE ACHIEVEMENT' : 'SUBMIT VICTORY'}
+                  </Button>
+               </form>
+            )}
+            <div className="grid gap-6">
+              {wins.map(w => (
+                <div key={w.id} className="p-6 border-4 border-black bg-white flex justify-between items-center group">
+                  <div className="flex items-center gap-6">
+                    {w.certificate_url ? (
+                      <img src={w.certificate_url} className="h-20 w-32 object-cover border-2 border-black bg-black/5" />
+                    ) : (
+                      <div className="h-20 w-32 border-2 border-black border-dashed flex items-center justify-center bg-black/5">
+                        <Trophy className="opacity-20 size-8" />
+                      </div>
+                    )}
+                    <div>
+                      <div className="flex items-center gap-3 mb-1">
+                        <h4 className="font-black text-xl italic">{w.position}</h4>
+                        <span className="bg-black text-primary px-2 py-1 text-[10px] font-black uppercase tracking-widest">
+                          {w.event_date}
+                        </span>
+                      </div>
+                      <p className="text-black/60 font-medium uppercase tracking-widest text-xs">@ {w.title}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button onClick={() => startEditWin(w)} variant="ghost" className="text-black/50 hover:text-black">
+                      <Pencil className="size-5" />
+                    </Button>
+                    <Button onClick={() => handleDelete('wins', w.id)} variant="ghost" className="text-destructive">
+                      <Trash2 className="size-5" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </TabsContent>
+
           {/* TIMELINE */}
           <TabsContent value="timeline" className="space-y-12 animate-in fade-in slide-in-from-bottom-2">
             <h2 className="text-4xl font-black uppercase tracking-tighter italic">The Journey</h2>
@@ -586,6 +763,26 @@ export default function AdminDashboard() {
                <div className="grid md:grid-cols-2 gap-6">
                   <Input placeholder="Year (e.g. 2024)" className="bg-white" value={timelineForm.year} onChange={e => setTimelineForm({...timelineForm, year: e.target.value})} />
                   <Input placeholder="Milestone Title" className="bg-white" value={timelineForm.title} onChange={e => setTimelineForm({...timelineForm, title: e.target.value})} />
+               </div>
+               <div className="grid md:grid-cols-2 gap-6">
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-black/60 pl-1">Visual Marker</Label>
+                    <select 
+                      className="bg-white border-2 border-black h-12 px-4 font-black uppercase text-xs" 
+                      value={timelineForm.icon_type} 
+                      onChange={e => setTimelineForm({...timelineForm, icon_type: e.target.value})}
+                    >
+                      <option value="sparkles">✨ Light (Sparkles)</option>
+                      <option value="cap">🎓 Education (Cap)</option>
+                      <option value="trophy">🏆 Achievement (Trophy)</option>
+                      <option value="rocket">🚀 Launch (Rocket)</option>
+                      <option value="briefcase">💼 Career (Briefcase)</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-black/60 pl-1">Sort Priority (Lower = First)</Label>
+                    <Input type="number" placeholder="0" className="bg-white h-12" value={timelineForm.sort_order} onChange={e => setTimelineForm({...timelineForm, sort_order: e.target.value})} />
+                  </div>
                </div>
                <Textarea placeholder="Short description" className="bg-white" value={timelineForm.description} onChange={e => setTimelineForm({...timelineForm, description: e.target.value})} />
                <Button className="bg-black text-primary font-black uppercase h-12">

@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { ExternalLink, Github, X, ArrowUpRight, Code2, Calendar, MapPin } from 'lucide-react';
+import { ExternalLink, Github, X, ArrowUpRight, Code2, Calendar, MapPin, Trophy } from 'lucide-react';
 import type { Project } from '@/types';
 
 interface ProjectPreviewModalProps {
@@ -103,6 +103,32 @@ export function ProjectPreviewModal({ project, isOpen, onClose }: ProjectPreview
                         </span>
                       )}
                     </div>
+
+                    {project.isHackathon && (
+                      <div className="border-4 border-black bg-primary p-6 space-y-4 shadow-[8px_8px_0px_black] relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-2 opacity-10">
+                          <Trophy className="size-24 -rotate-12" />
+                        </div>
+                        <div className="relative z-10 flex flex-col gap-1">
+                          <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.25em] text-black/60">
+                            <Trophy className="size-3" />
+                            <span>HACKATHON WIN</span>
+                          </div>
+                          <h3 className="text-2xl font-black uppercase tracking-tighter italic text-black leading-none pt-1">
+                            {project.hackathonPosition || 'Participant'}
+                          </h3>
+                          <p className="text-xs font-black uppercase tracking-widest text-black/40">@ {project.hackathonName || 'Incredible Event'}</p>
+                        </div>
+                        
+                        {project.hackathonDescription && (
+                          <div className="relative z-10 bg-white/30 backdrop-blur-sm p-4 border-2 border-black/10">
+                            <p className="text-xs font-bold leading-relaxed text-black/80 italic">
+                                "{project.hackathonDescription}"
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className="border-2 border-black bg-white p-5 md:p-6">
                       <p className="mb-3 text-[10px] font-black uppercase tracking-[0.25em] text-black/40">

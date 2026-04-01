@@ -44,25 +44,25 @@ export function GallerySection({ images }: { images: any[] }) {
               <div className="w-12 h-1 bg-white/10 rounded" />
            </div>
 
-           {/* Window Body - 4-Pic Grid */}
-           <div className="bg-[#1a1a1a] p-3 md:p-6 border-4 border-black rounded-b-xl grid grid-cols-2 gap-3 md:gap-6 shadow-[20px_20px_0px_rgba(255,214,0,1)]">
-              {featured.length > 0 ? featured.map((img, i) => (
-                <div key={img.id} className="aspect-[4/3] bg-[#2a2a2a] overflow-hidden group border-2 border-white/5 relative">
-                   <img 
-                    src={img.image_url} 
-                    className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" 
-                    alt={img.caption || 'Moment'} 
-                   />
-                   <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary transition-colors pointer-events-none" />
-                </div>
-              )) : (
-                Array(4).fill(0).map((_, i) => (
-                  <div key={i} className="aspect-[4/3] bg-[#2a2a2a] flex items-center justify-center border-2 border-white/5">
-                     <Camera className="text-white/10 size-12" />
-                  </div>
-                ))
-              )}
-           </div>
+            {/* Window Body - 4-Pic Grid */}
+            <div className="bg-[#1a1a1a] p-3 md:p-6 border-4 border-black rounded-b-xl grid grid-cols-2 gap-3 md:gap-6 shadow-[20px_20px_0px_rgba(255,214,0,1)]">
+               {featured.length > 0 ? featured.map((img, i) => (
+                 <div key={img.id} className="relative aspect-square md:aspect-[4/3] bg-[#222] border-2 border-white/5 overflow-hidden group flex items-center justify-center">
+                    <img 
+                     src={img.image_url} 
+                     className="max-w-full max-h-full object-contain grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" 
+                     alt={img.caption || 'Moment'} 
+                    />
+                    <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary transition-colors pointer-events-none" />
+                 </div>
+               )) : (
+                 Array(4).fill(0).map((_, i) => (
+                   <div key={i} className="aspect-square md:aspect-[4/3] bg-[#2a2a2a] flex items-center justify-center border-2 border-white/5">
+                      <Camera className="text-white/10 size-12" />
+                   </div>
+                 ))
+               )}
+            </div>
         </motion.div>
       </div>
     </section>

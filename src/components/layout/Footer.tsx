@@ -76,9 +76,7 @@ export function Footer() {
             © 2026 AAKASH AGRAHARI — BUILT BY HAND.
           </p>
           <div className="flex gap-8 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-            <span className="hover:text-black cursor-pointer">PRIVACY</span>
-            <span className="hover:text-black cursor-pointer">TERMS</span>
-            <span className="bg-black text-primary px-2">GCU 2026</span>
+            <span className="bg-black text-primary px-2 py-0.5">TECHIE</span>
           </div>
         </div>
       </div>

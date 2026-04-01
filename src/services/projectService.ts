@@ -72,6 +72,10 @@ function mapSupabaseToProject(data: any[]): Project[] {
     githubUrl: p.github_url || '',
     techStack: Array.isArray(p.tech_stack) ? p.tech_stack : [],
     highlight: stripPinnedMarker(p.highlight) || undefined,
-    isPinned: isPinnedText(p.highlight)
+    isPinned: isPinnedText(p.highlight),
+    isHackathon: Boolean(p.is_hackathon),
+    hackathonName: p.hackathon_name || '',
+    hackathonDescription: p.hackathon_description || '',
+    hackathonPosition: p.hackathon_position || ''
   }));
 }

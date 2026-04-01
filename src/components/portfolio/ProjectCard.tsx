@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import type { Project } from '@/types';
 import { cn } from '@/lib/utils';
-import { ArrowUpRight, ExternalLink, Github } from 'lucide-react';
+import { ArrowUpRight, ExternalLink, Github, Star } from 'lucide-react';
 
 interface ProjectCardProps {
   project: Project;
@@ -66,11 +66,29 @@ export function ProjectCard({
             onLoad={() => setIsLoaded(true)}
           />
 
-          <div className="absolute top-4 left-4 z-20">
+          <div className="absolute top-4 left-4 z-20 flex flex-wrap gap-2">
             {showCategory && (
-              <div className="translate-y-2 bg-black px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+              <div className="bg-black px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary border border-primary/20">
                 {project.category || 'Mission'}
               </div>
+            )}
+            {project.isPinned && (
+              <div className="bg-black px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary border border-primary/20 flex items-center gap-1.5">
+                <Star className="size-2.5 fill-current" />
+                FEATURED
+              </div>
+            )}
+            {project.isHackathon && (
+              <>
+                <div className="translate-y-2 bg-black px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary opacity-0 transition-all duration-500 delay-75 group-hover:translate-y-0 group-hover:opacity-100">
+                  HACKATHON
+                </div>
+                {project.hackathonPosition && (
+                  <div className="translate-y-2 bg-black px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary opacity-0 transition-all duration-500 delay-150 group-hover:translate-y-0 group-hover:opacity-100">
+                    {project.hackathonPosition} @ {project.hackathonName || 'EVENT'}
+                  </div>
+                )}
+              </>
             )}
           </div>
 

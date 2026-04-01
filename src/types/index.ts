@@ -32,6 +32,20 @@ export interface Project {
   techStack?: string[];
   highlight?: string;
   isPinned?: boolean;
+  isHackathon?: boolean;
+  hackathonName?: string;
+  hackathonDescription?: string;
+  hackathonPosition?: string;
+}
+
+export interface Win {
+  id: string;
+  title: string;
+  position: string;
+  description: string;
+  certificateUrl?: string;
+  eventDate: string;
+  slug: string;
 }
 
 export interface PhotographerInfo {
