@@ -67,11 +67,6 @@ export function ProjectCard({
           />
 
           <div className="absolute top-4 left-4 z-20">
-            {project.isPinned && (
-              <div className="mb-2 w-fit border-2 border-black bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-black">
-                Pinned
-              </div>
-            )}
             {showCategory && (
               <div className="translate-y-2 bg-black px-3 py-1 text-[10px] font-black uppercase tracking-widest text-primary opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
                 {project.category || 'Mission'}

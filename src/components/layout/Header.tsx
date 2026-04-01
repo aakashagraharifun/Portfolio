@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 const navLinks = [
   { name: 'HOME', path: '/' },
   { name: 'PORTFOLIO', path: '/portfolio' },
+  { name: 'TIMELINE', path: '/timeline' },
   { name: 'BLOG', path: '/blog' },
   { name: 'ABOUT', path: '/about' },
   { name: 'CONTACT', path: '/contact' },
@@ -20,6 +21,11 @@ export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
+
+  const isActiveRoute = (path: string) => {
+    if (path === '/') return location.pathname === '/';
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
+  };
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 50);
@@ -48,9 +54,9 @@ export function Header() {
               key={link.path}
               to={link.path}
               className={cn(
-                "text-[10px] font-black uppercase tracking-[0.25em] transition-all relative py-2",
-                "text-black hover:text-primary",
-                location.pathname === link.path && "after:absolute after:bottom-0 after:left-0 after:w-full after:h-1 after:bg-primary"
+                "inline-flex h-11 items-center border-2 px-4 text-[10px] font-black uppercase tracking-[0.25em] transition-all",
+                "border-transparent text-black hover:border-black hover:bg-white",
+                isActiveRoute(link.path) && "border-black bg-white text-black shadow-[4px_4px_0px_black]"
               )}
             >
               {link.name}
@@ -78,7 +84,11 @@ export function Header() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="text-4xl font-black uppercase tracking-tighter text-black hover:text-primary transition-colors italic"
+                  className={cn(
+                    "border-2 px-6 py-4 text-4xl font-black uppercase tracking-tighter text-black transition-colors italic",
+                    "border-transparent hover:border-black hover:bg-primary",
+                    isActiveRoute(link.path) && "border-black bg-black text-primary"
+                  )}
                 >
                   {link.name}
                 </Link>

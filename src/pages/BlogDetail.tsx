@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { BlogContentRenderer } from '@/components/blog/BlogContentRenderer';
 import { supabase } from '@/lib/supabase';
-import { Loader2, ArrowLeft, Calendar, Share2, BookOpen } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Loader2, ArrowLeft, Share2 } from 'lucide-react';
 
 /**
  * MASTER BLOG DETAIL PAGE
@@ -84,11 +84,7 @@ export default function BlogDetail() {
                </div>
              )}
 
-             <div className="prose prose-2xl prose-black max-w-none space-y-12 block text-black/80 font-medium leading-relaxed tracking-tight selection:bg-primary">
-                {blog.content.split('\n\n').map((para: string, i: number) => (
-                   <p key={i} className="text-xl md:text-2xl">{para}</p>
-                ))}
-             </div>
+             <BlogContentRenderer content={blog.content} />
 
              <div className="mt-32 pt-12 border-t-4 border-black flex flex-col md:flex-row items-center justify-between gap-12">
                 <div className="flex gap-4">

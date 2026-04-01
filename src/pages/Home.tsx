@@ -139,7 +139,7 @@ export default function Home() {
         )}
 
         {/* Journey - Interactive Scroll Path */}
-        {data.timeline.length > 0 && <JourneyTimeline items={data.timeline} />}
+        <JourneyTimeline items={data.timeline.length > 0 ? data.timeline : undefined} />
 
         {/* Gallery */}
         {data.gallery.length > 0 && <GallerySection images={data.gallery} />}

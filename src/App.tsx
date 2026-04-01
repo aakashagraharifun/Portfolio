@@ -9,6 +9,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import Gallery from './pages/Gallery';
+import Timeline from './pages/Timeline';
+import ProjectDetail from './pages/ProjectDetail';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { TransitionProvider } from './context/TransitionContext';
@@ -22,6 +24,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/project/:slug" element={<ProjectDetail />} />
+            <Route path="/timeline" element={<Timeline />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogDetail />} />
             <Route path="/gallery" element={<Gallery />} />
