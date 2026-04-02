@@ -156,52 +156,91 @@ function TimelineContent({ points }: { points: JourneyPoint[] }) {
         </svg>
 
         {/* Milestone Nodes */}
-        {points.map((point, index) => {
-          const pos = getPointPosition(index, points.length);
-          const threshold = (index + 0.5) / points.length;
-          const opacity = useTransform(scrollYProgress, [threshold - 0.1, threshold], [0, 1]);
-          const scale = useTransform(scrollYProgress, [threshold - 0.1, threshold], [0.5, 1]);
-          const rotate = useTransform(scrollYProgress, [threshold - 0.1, threshold], [-45, 0]);
-          const Icon = getIcon(point.icon_type);
-
-          return (
-            <motion.div
-              key={point.id}
-              className="absolute z-20"
-              style={{
-                left: `${(pos.x / 1000) * 100}%`,
-                top: `${(pos.y / totalHeight) * 100}%`,
-                opacity,
-                scale,
-                rotate,
-                transform: 'translate(-50%, -50%)'
-              }}
-            >
-              <div className="relative group">
-                <div className="size-24 rounded-none bg-primary border-4 border-black flex items-center justify-center shadow-[8px_8px_0px_black] group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all duration-300">
-                  <Icon className="size-10 text-black" />
-                </div>
-                
-                <motion.div 
-                  className={`absolute top-1/2 -translate-y-1/2 ${pos.x > 500 ? 'left-32' : 'right-32 text-right'} w-80 p-8 bg-white border-4 border-black shadow-[12px_12px_0px_rgba(255,214,0,0.4)] transition-all`}
-                >
-                  <span className="text-[12px] font-black tracking-[0.4em] text-primary uppercase block mb-3 border-b-2 border-primary pb-2 w-fit">{point.year}</span>
-                  <h3 className="text-3xl font-black uppercase tracking-tighter leading-tight italic">{point.title}</h3>
-                  <p className="text-sm text-black font-bold mt-4 leading-relaxed tracking-tight">
-                    {point.description}
-                  </p>
-                </motion.div>
-                
-                {/* Motion pulse effect */}
-                <div className="absolute inset-0 bg-primary/40 -z-10 group-hover:scale-150 group-hover:opacity-0 transition-all duration-1000" />
-              </div>
-            </motion.div>
-          );
-        })}
+        {points.map((point, index) => (
+          <TimelineNode 
+            key={point.id}
+            point={point}
+            index={index}
+            totalPoints={points.length}
+            totalHeight={totalHeight}
+            scrollYProgress={scrollYProgress}
+          />
+        ))}
       </div>
       
       {/* Bottom spacing to anchor the timeline end */}
       <div className="h-12" />
     </section>
+  );
+}
+
+function TimelineNode({ 
+  point, 
+  index, 
+  totalPoints, 
+  totalHeight, 
+  scrollYProgress 
+}: { 
+  point: JourneyPoint; 
+  index: number; 
+  totalPoints: number; 
+  totalHeight: number;
+  scrollYProgress: any;
+}) {
+  const getPointPosition = (index: number, total: number) => {
+    const y = (index + 0.5) * (totalHeight / total);
+    const x = 500 + Math.sin(index * 2) * 280;
+    return { x, y };
+  };
+
+  const getIcon = (type: string) => {
+    switch (type) {
+      case 'cap': return GraduationCap;
+      case 'trophy': return Trophy;
+      case 'rocket': return Rocket;
+      case 'briefcase': return Briefcase;
+      default: return Sparkles;
+    }
+  };
+
+  const pos = getPointPosition(index, totalPoints);
+  const threshold = (index + 0.5) / totalPoints;
+  
+  const opacity = useTransform(scrollYProgress, [threshold - 0.1, threshold], [0, 1]);
+  const scale = useTransform(scrollYProgress, [threshold - 0.1, threshold], [0.5, 1]);
+  const rotate = useTransform(scrollYProgress, [threshold - 0.1, threshold], [-45, 0]);
+  const Icon = getIcon(point.icon_type);
+
+  return (
+    <motion.div
+      className="absolute z-20"
+      style={{
+        left: `${(pos.x / 1000) * 100}%`,
+        top: `${(pos.y / totalHeight) * 100}%`,
+        opacity,
+        scale,
+        rotate,
+        transform: 'translate(-50%, -50%)'
+      }}
+    >
+      <div className="relative group">
+        <div className="size-24 rounded-none bg-primary border-4 border-black flex items-center justify-center shadow-[8px_8px_0px_black] group-hover:shadow-none group-hover:translate-x-1 group-hover:translate-y-1 transition-all duration-300">
+          <Icon className="size-10 text-black" />
+        </div>
+        
+        <motion.div 
+          className={`absolute top-1/2 -translate-y-1/2 ${pos.x > 500 ? 'left-32' : 'right-32 text-right'} w-80 p-8 bg-white border-4 border-black shadow-[12px_12px_0px_rgba(255,214,0,0.4)] transition-all`}
+        >
+          <span className="text-[12px] font-black tracking-[0.4em] text-primary uppercase block mb-3 border-b-2 border-primary pb-2 w-fit">{point.year}</span>
+          <h3 className="text-3xl font-black uppercase tracking-tighter leading-tight italic">{point.title}</h3>
+          <p className="text-sm text-black font-bold mt-4 leading-relaxed tracking-tight">
+            {point.description}
+          </p>
+        </motion.div>
+        
+        {/* Motion pulse effect */}
+        <div className="absolute inset-0 bg-primary/40 -z-10 group-hover:scale-150 group-hover:opacity-0 transition-all duration-1000" />
+      </div>
+    </motion.div>
   );
 }
