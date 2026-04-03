@@ -35,7 +35,7 @@ export function JourneyTimeline({ items }: { items?: JourneyPoint[] }) {
       // Fallback/Direct fetch if needed
       async function fetchTimeline() {
         try {
-          const data = await getTimeline();
+          const data = await getTimeline(false, false);
 
           if (data && data.length > 0) {
             setPoints(data);

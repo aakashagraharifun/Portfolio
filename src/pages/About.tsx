@@ -84,7 +84,7 @@ export default function About() {
                     <ul className="space-y-3">
                        <li className="text-sm font-black uppercase">PRAJUKTI-GCU Hackathon Winner 2026</li>
                        <li className="text-sm font-black uppercase">USTM 8th NEGC 2026 Innovation Winner</li>
-                       <li className="text-sm font-black uppercase">RUNNER UP IN CODEWAR 7.0</li>
+                       <li className="text-sm font-black uppercase">RUNNER UP IN Codestellation, under CodeWar 7.0 at AEC</li>
                        <li className="text-sm font-black uppercase">Startup Cofounder - Intellaris Studio</li>
                     </ul>
                  </div>

@@ -28,8 +28,8 @@ export default function Portfolio() {
   return (
     <>
       <SEOHead 
-        title="Portfolio"
-        description="Browse my complete portfolio — hackathon-winning projects, web apps, startup contributions, and creative experiments."
+        title="Projects"
+        description="Browse my complete archive — hackathon-winning projects, web apps, startup contributions, and creative experiments."
       />
       
       <div className="min-h-screen">
@@ -42,7 +42,7 @@ export default function Portfolio() {
             transition={{ duration: 0.8 }}
           >
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-wide mb-4">
-              Portfolio
+              Projects
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide max-w-2xl mx-auto">
               Every project is a story — hackathon sprints, shipped products, and creative experiments

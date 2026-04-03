@@ -20,17 +20,20 @@ function normalizeGalleryItems(data: any[]) {
   );
 }
 
-function normalizeTimelineItems(data: any[]) {
+function normalizeTimelineItems(data: any[], sortPinned = true) {
   if (!Array.isArray(data)) return [];
 
-  return sortPinnedFirst(
-    data.map((item) => ({
-      ...item,
-      title: stripPinnedMarker(item.title) || 'Untitled Milestone',
-      isPinned: isPinnedText(item.title)
-    })),
-    (item) => Boolean(item.isPinned)
-  );
+  const items = data.map((item) => ({
+    ...item,
+    title: stripPinnedMarker(item.title) || 'Untitled Milestone',
+    isPinned: isPinnedText(item.title)
+  }));
+
+  if (sortPinned) {
+    return sortPinnedFirst(items, (item) => Boolean(item.isPinned));
+  }
+
+  return items;
 }
 
 // PROJECTS
@@ -121,7 +124,7 @@ export async function getSocials() {
 }
 
 // TIMELINE
-export async function getTimeline(pinnedOnly = false) {
+export async function getTimeline(pinnedOnly = false, sortPinned = true) {
   try {
     const { data, error } = await supabase
       .from('timeline')
@@ -130,7 +133,7 @@ export async function getTimeline(pinnedOnly = false) {
       
     if (error || !data) return [];
 
-    const normalized = normalizeTimelineItems(data);
+    const normalized = normalizeTimelineItems(data, sortPinned);
     return pinnedOnly ? normalized.filter((item) => item.isPinned) : normalized;
   } catch (e) {
     console.error("Timeline fetch failed:", e);

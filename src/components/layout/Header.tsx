@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 const navLinks = [
   { name: 'HOME', path: '/' },
-  { name: 'PORTFOLIO', path: '/portfolio' },
+  { name: 'PROJECTS', path: '/portfolio' },
   { name: 'WINS', path: '/wins' },
   { name: 'TIMELINE', path: '/timeline' },
   { name: 'BLOG', path: '/blog' },
@@ -21,6 +21,8 @@ const navLinks = [
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const location = useLocation();
 
   const isActiveRoute = (path: string) => {
@@ -29,10 +31,26 @@ export function Header() {
   };
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Update scrolled state for styling
+      setScrolled(currentScrollY > 50);
+
+      // Hide header when scrolling down, show when scrolling up
+      // Add a small buffer (10px) to prevent flickering
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   // Close mobile menu on route change
   useEffect(() => setIsOpen(false), [location.pathname]);
@@ -40,6 +58,7 @@ export function Header() {
   return (
     <header className={cn(
       'fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b-2',
+      (isVisible || isOpen) ? 'translate-y-0' : '-translate-y-full',
       scrolled ? 'bg-white/95 backdrop-blur-xl border-primary py-4' : 'bg-transparent border-transparent py-6'
     )}>
       <nav className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">

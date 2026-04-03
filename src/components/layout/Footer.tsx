@@ -38,7 +38,7 @@ export function Footer() {
             <h4 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-8">NAVIGATION</h4>
             <div className="flex flex-col gap-4 text-sm font-black uppercase tracking-widest text-black">
               <Link to="/" className="hover:text-primary transition-colors">HOME</Link>
-              <Link to="/portfolio" className="hover:text-primary transition-colors">MISSIONS</Link>
+              <Link to="/portfolio" className="hover:text-primary transition-colors">PROJECTS</Link>
               <Link to="/about" className="hover:text-primary transition-colors">ABOUT</Link>
               <Link to="/contact" className="hover:text-primary transition-colors">CONTACT</Link>
             </div>

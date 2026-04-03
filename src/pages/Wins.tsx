@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { getAllWins } from '@/services/winService';
 import { Win } from '@/types';
-import { Trophy, Calendar, Award, ExternalLink, Loader2, Sparkles } from 'lucide-react';
+import { Trophy, Calendar, Award, ExternalLink, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { SEOHead } from '@/components/seo/SEOHead';
 
 export default function Wins() {
   const [wins, setWins] = useState<Win[]>([]);
@@ -27,7 +28,12 @@ export default function Wins() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdfbf7] pt-32 pb-24 selection:bg-primary">
+    <>
+      <SEOHead 
+        title="Wins"
+        description="Explore the chronicle of victories — hackathons, coding competitions, and academic academic honors."
+      />
+      <div className="min-h-screen bg-[#fdfbf7] pt-32 pb-24 selection:bg-primary">
       {/* Hero Header */}
       <section className="max-w-7xl mx-auto px-6 md:px-12 mb-24">
         <div className="relative border-l-8 border-primary pl-8 py-4">
@@ -87,8 +93,7 @@ export default function Wins() {
 
                   {/* Story Box */}
                   <div className="border-4 border-black bg-white p-8 md:p-10 shadow-[12px_12px_0px_black] group-hover:shadow-[16px_16px_0px_rgba(255,214,0,1)] transition-all duration-500">
-                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/30 mb-6 flex items-center gap-2">
-                      <Sparkles className="size-3" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-black/30 mb-6">
                       DETAILS
                     </p>
                     <p className="text-lg md:text-xl font-medium leading-relaxed text-black/80">
@@ -145,5 +150,6 @@ export default function Wins() {
         </div>
       </section>
     </div>
+    </>
   );
 }

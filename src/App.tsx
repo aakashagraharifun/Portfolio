@@ -15,6 +15,7 @@ import ProjectDetail from './pages/ProjectDetail';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/layout/Footer';
 import { TransitionProvider } from './context/TransitionContext';
+import { ScrollToTop } from './components/layout/ScrollToTop';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
       <div className="min-h-screen bg-white font-sans antialiased text-black selection:bg-primary selection:text-black">
         <Header />
         <main>
+          <ScrollToTop />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/portfolio" element={<Portfolio />} />

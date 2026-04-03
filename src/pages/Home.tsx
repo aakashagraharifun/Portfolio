@@ -7,7 +7,7 @@ import { ProjectPreviewModal } from '@/components/portfolio/ProjectPreviewModal'
 import { ScrollIndicator } from '@/components/ui/ScrollIndicator';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { SEOHead } from '@/components/seo/SEOHead';
-import { ArrowRight, Loader2, Play, MousePointer2 } from 'lucide-react';
+import { ArrowRight, Loader2, Play, MousePointer2, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Project } from '@/types';
 import { JourneyTimeline } from '@/components/portfolio/JourneyTimeline';
@@ -103,7 +103,7 @@ export default function Home() {
               
               <div className="flex flex-wrap gap-4">
                 <Link to="/portfolio" className="group h-16 px-10 bg-black text-primary flex items-center gap-3 font-black uppercase text-sm tracking-widest hover:bg-black/90 transition-all shadow-[8px_8px_0px_white] hover:shadow-none">
-                  VIEW MISSIONS <ArrowRight className="size-4 transition-transform group-hover:translate-x-2" />
+                  VIEW PROJECTS <ArrowRight className="size-4 transition-transform group-hover:translate-x-2" />
                 </Link>
                 <div className="h-16 w-16 border-4 border-black flex items-center justify-center cursor-pointer hover:bg-black hover:text-primary transition-all">
                   <Play className="size-6 fill-current" />
@@ -116,9 +116,19 @@ export default function Home() {
         {/* Feature Projects with BIG TYPE */}
         {data.projects.length > 0 && (
           <section className="py-24 md:py-32 bg-white">
-            <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-20 space-y-4">
-                 <div className="bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-block border-2 border-black">SELECTED BUILDS</div>
-                 <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-black leading-none italic">THE ARIVE.</h2>
+            <div className="max-w-7xl mx-auto px-6 lg:px-8 mb-20">
+              <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
+                <div className="space-y-4">
+                  <div className="bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-block border-2 border-black">SELECTED BUILDS</div>
+                  <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-black leading-none italic">THE ARIVE.</h2>
+                </div>
+                <Link 
+                  to="/portfolio" 
+                  className="group h-16 px-12 border-4 border-black font-black uppercase text-xs tracking-widest flex items-center gap-4 hover:bg-black hover:text-primary transition-all mb-4"
+                >
+                  VIEW ALL <Plus size={16} className="group-hover:rotate-180 transition-transform duration-500" />
+                </Link>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4 md:px-8 max-w-7xl mx-auto">
