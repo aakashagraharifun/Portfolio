@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTransition } from '@/context/TransitionContext';
 
 const navLinks = [
   { name: 'HOME', path: '/' },
@@ -23,6 +24,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const { isNameHovered, setIsNameHovered } = useTransition();
   const location = useLocation();
 
   const isActiveRoute = (path: string) => {
@@ -57,14 +59,21 @@ export function Header() {
 
   return (
     <header className={cn(
-      'fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b-2',
+      'fixed top-0 left-0 right-0 z-[101] transition-all duration-500 border-b-2',
       (isVisible || isOpen) ? 'translate-y-0' : '-translate-y-full',
-      scrolled ? 'bg-white/95 backdrop-blur-xl border-primary py-4' : 'bg-transparent border-transparent py-6'
+      (scrolled && !isNameHovered) ? 'bg-white/95 backdrop-blur-xl border-primary py-4' : 'bg-transparent border-transparent py-6'
     )}>
       <nav className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
-        <Link to="/" className="group flex items-center gap-2">
-          <div className="bg-black text-primary px-3 py-1 font-black text-sm uppercase tracking-widest">AA</div>
-          <span className="font-black text-lg text-black uppercase tracking-tighter hover:text-primary transition-colors">Aakash Agrahari</span>
+        <Link 
+          to="/" 
+          className="group flex items-center gap-2 relative"
+          onMouseEnter={() => setIsNameHovered(true)}
+          onMouseLeave={() => setIsNameHovered(false)}
+        >
+          <div className="bg-black text-primary px-3 py-1 font-black text-sm uppercase tracking-widest transition-transform group-hover:scale-110">AA</div>
+          <span className="font-black text-lg text-black uppercase tracking-tighter transition-all group-hover:italic group-hover:translate-x-1">
+            Aakash Agrahari
+          </span>
         </Link>
 
         {/* Desktop Nav - Clean & Bold */}
@@ -120,3 +129,6 @@ export function Header() {
     </header>
   );
 }
+
+
+

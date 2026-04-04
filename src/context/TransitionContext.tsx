@@ -1,15 +1,19 @@
 import React, { createContext, useContext, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { NameHoverOverlay } from '@/components/layout/NameHoverOverlay';
 
 const TransitionContext = createContext({
   isTransitioning: false,
   startTransition: (callback: () => void) => {},
+  isNameHovered: false,
+  setIsNameHovered: (value: boolean) => {},
 });
 
 export const useTransition = () => useContext(TransitionContext);
 
 export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isNameHovered, setIsNameHovered] = useState(false);
 
   const startTransition = (callback: () => void) => {
     setIsTransitioning(true);
@@ -20,12 +24,15 @@ export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   };
 
   return (
-    <TransitionContext.Provider value={{ isTransitioning, startTransition }}>
+    <TransitionContext.Provider value={{ isTransitioning, startTransition, isNameHovered, setIsNameHovered }}>
        <AnimatePresence mode="wait">
           {children}
        </AnimatePresence>
        
-       {/* Global Brutalist Overlay */}
+       {/* Global Name Hover Overlay */}
+       <NameHoverOverlay isVisible={isNameHovered} />
+
+       {/* Global Brutalist Overlay (for page transitions) */}
        <AnimatePresence>
          {isTransitioning && (
            <motion.div
@@ -40,3 +47,4 @@ export const TransitionProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     </TransitionContext.Provider>
   );
 };
+

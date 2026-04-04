@@ -69,12 +69,13 @@ export function ProjectPreviewModal({ project, isOpen, onClose }: ProjectPreview
             <div className="flex-1 overflow-y-auto">
               <div className="grid min-h-full lg:grid-cols-[1.35fr_0.65fr]">
                 <div className="border-b-2 border-black bg-[#fdfbf7] p-5 md:p-8 lg:border-b-0 lg:border-r-2">
-                  <div className="relative flex h-full min-h-[340px] items-center justify-center overflow-hidden border-2 border-black bg-[radial-gradient(circle_at_top_left,_rgba(255,214,0,0.18),_transparent_42%),linear-gradient(135deg,#ffffff_0%,#f6f1e7_100%)] p-4 md:min-h-[520px] md:p-6 lg:min-h-[640px]">
+                  <div className="relative flex min-h-[340px] items-start justify-center overflow-hidden border-2 border-black bg-[radial-gradient(circle_at_top_left,_rgba(255,214,0,0.18),_transparent_42%),linear-gradient(135deg,#ffffff_0%,#f6f1e7_100%)] p-2 md:min-h-[520px] md:p-4 lg:min-h-[640px]">
                     <img
                       src={project.coverImage || '/placeholder-project.jpg'}
                       alt={project.title}
-                      className="h-full w-full object-contain object-center"
+                      className="w-full h-auto object-contain object-top"
                     />
+
 
                     <div className="absolute left-4 top-4 flex flex-wrap gap-2">
                       <span className="border-2 border-black bg-primary px-3 py-1 text-[10px] font-black uppercase tracking-[0.25em] text-black">
