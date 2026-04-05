@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import Home from './pages/Home';
 import Portfolio from './pages/Portfolio';
@@ -18,10 +18,13 @@ import { TransitionProvider } from './context/TransitionContext';
 import { ScrollToTop } from './components/layout/ScrollToTop';
 
 function App() {
+  const location = useLocation();
+  const isAdminPath = location.pathname.startsWith('/admin');
+
   return (
     <TransitionProvider>
       <div className="min-h-screen bg-white font-sans antialiased text-black selection:bg-primary selection:text-black">
-        <Header />
+        {!isAdminPath && <Header />}
         <main>
           <ScrollToTop />
           <Routes>
@@ -39,7 +42,7 @@ function App() {
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
           </Routes>
         </main>
-        <Footer />
+        {!isAdminPath && <Footer />}
         <Toaster position="top-center" richColors theme="light" />
       </div>
     </TransitionProvider>
