@@ -39,4 +39,4 @@ GitHub: aakashagraharifun
 Twitter: @aakash_zip
 Portfolio: aakashagrahari.com
 
-Built with conviction in Guwahati, India.
+Built with conviction in Guwahati, India & Butwal, Nepal.
