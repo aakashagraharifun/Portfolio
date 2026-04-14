@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import { photographerInfo } from '@/data/photographer';
 
 interface SEOHeadProps {
@@ -11,7 +11,7 @@ interface SEOHeadProps {
 
 /**
  * SEO component for managing page meta tags
- * Handles title, description, and Open Graph tags
+ * Handles title, description, and Open Graph tags using react-helmet-async
  */
 export function SEOHead({ 
   title, 
@@ -28,48 +28,32 @@ export function SEOHead({
   const defaultDescription = photographerInfo.heroIntroduction;
   const fullDescription = description || defaultDescription;
   
-  const baseUrl = window.location.origin;
+  const baseUrl = "https://aakashagrahari.com.np"; // Update with your actual domain
   const fullUrl = `${baseUrl}${location.pathname}`;
 
-  useEffect(() => {
-    // Update document title
-    document.title = fullTitle;
+  return (
+    <Helmet>
+      {/* Standard Meta Tags */}
+      <title>{fullTitle}</title>
+      <meta name="description" content={fullDescription} />
+      <meta name="author" content={photographerInfo.name} />
+      <meta name="keywords" content={`developer, ${photographerInfo.name}, full stack, hackathon winner, AI enthusiast, ${photographerInfo.tagline}, Guwahati, Nepal`} />
+      <link rel="canonical" href={fullUrl} />
 
-    // Update or create meta tags
-    const updateMetaTag = (name: string, content: string, isProperty = false) => {
-      const attribute = isProperty ? 'property' : 'name';
-      let element = document.querySelector(`meta[${attribute}="${name}"]`);
-      
-      if (!element) {
-        element = document.createElement('meta');
-        element.setAttribute(attribute, name);
-        document.head.appendChild(element);
-      }
-      
-      element.setAttribute('content', content);
-    };
+      {/* Open Graph Tags */}
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={fullDescription} />
+      <meta property="og:type" content={type} />
+      <meta property="og:url" content={fullUrl} />
+      <meta property="og:image" content={image} />
+      <meta property="og:site_name" content={photographerInfo.name} />
 
-    // Standard meta tags
-    updateMetaTag('description', fullDescription);
-    
-    // Open Graph tags
-    updateMetaTag('og:title', fullTitle, true);
-    updateMetaTag('og:description', fullDescription, true);
-    updateMetaTag('og:type', type, true);
-    updateMetaTag('og:url', fullUrl, true);
-    updateMetaTag('og:image', image, true);
-    updateMetaTag('og:site_name', photographerInfo.name, true);
-    
-    // Twitter Card tags
-    updateMetaTag('twitter:card', 'summary_large_image');
-    updateMetaTag('twitter:title', fullTitle);
-    updateMetaTag('twitter:description', fullDescription);
-    updateMetaTag('twitter:image', image);
-
-    // Additional SEO tags
-    updateMetaTag('author', photographerInfo.name);
-    updateMetaTag('keywords', `developer, ${photographerInfo.name}, full stack, hackathon winner, AI enthusiast, ${photographerInfo.tagline}`);
-  }, [fullTitle, fullDescription, fullUrl, image, type]);
-
-  return null;
+      {/* Twitter Card Tags */}
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:description" content={fullDescription} />
+      <meta name="twitter:image" content={image} />
+      <meta name="twitter:site" content="@aakash_zip" />
+    </Helmet>
+  );
 }
