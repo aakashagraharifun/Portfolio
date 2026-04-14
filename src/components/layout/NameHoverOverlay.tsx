@@ -101,7 +101,7 @@ export function NameHoverOverlay({ isVisible }: NameHoverOverlayProps) {
               />
 
               <div className="absolute top-4 right-4 bg-black text-primary px-4 py-2 font-black text-[10px] uppercase tracking-widest">
-                AWARD WINNER
+                WINNER
               </div>
             </motion.div>
           </div>
