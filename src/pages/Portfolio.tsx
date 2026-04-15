@@ -32,27 +32,17 @@ export default function Portfolio() {
         description="Browse my complete archive — hackathon-winning projects, web apps, startup contributions, and creative experiments."
       />
       
-      <div className="min-h-screen">
-        {/* Hero Section */}
-      <section className="relative pt-20 pb-12 md:pt-32 md:pb-20 px-6 lg:px-8 border-b border-border bg-[#fdfbf7]">
-        <div className="max-w-7xl mx-auto text-center space-y-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-wide mb-4">
-              Projects
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide max-w-2xl mx-auto">
-              Every project is a story — hackathon sprints, shipped products, and creative experiments
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <div className="min-h-screen bg-white">
+        {/* Simplified Header - No Hero Section */}
+        <section className="pt-32 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
+          <div className="inline-block bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-black mb-4">THE ARCHIVE</div>
+          <p className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-tight max-w-3xl">
+            Every project is a story — hackathon sprints, shipped products, and creative experiments.
+          </p>
+        </section>
 
-      {/* Dynamic Portfolio Grid */}
-      <section className="py-12 md:py-16 px-2 md:px-4 min-h-[400px]">
+        {/* Dynamic Portfolio Grid */}
+        <section className="pb-24 px-2 md:px-4 min-h-[400px]">
         {loading ? (
           <div className="flex items-center justify-center py-32">
             <Loader2 className="size-16 animate-spin opacity-20 text-primary" />

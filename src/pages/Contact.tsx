@@ -18,27 +18,17 @@ export default function Contact() {
         description={`Get in touch with ${photographerInfo.name} for collaborations, freelance work, startup opportunities, and project inquiries. ${photographerInfo.availability}`}
       />
       
-      <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="pt-20 pb-12 md:pt-32 md:pb-20 px-6 lg:px-8 border-b border-border bg-[#fdfbf7]">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
-          <motion.div
-            initial={{ opacity: 0.8, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-light tracking-wide mb-4">
-              Get in Touch
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground font-light tracking-wide">
-              Let's build something together
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <div className="min-h-screen bg-white">
+        {/* Simplified Header - No Hero Section */}
+        <section className="pt-32 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
+          <div className="inline-block bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-black mb-4">THE CONTACT</div>
+          <p className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-tight max-w-3xl">
+            Let's build something together. Get in touch for collaborations and opportunities.
+          </p>
+        </section>
 
-      {/* Main Content */}
-      <section className="py-16 md:py-24 px-6 lg:px-8">
+        {/* Main Content */}
+        <section className="pb-24 px-6 lg:px-8">
         <div className="max-w-5xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
             {/* Contact Form */}
