@@ -51,7 +51,7 @@ export function GallerySection({ images }: { images: any[] }) {
                     <img 
                      src={img.image_url} 
                      className="max-w-full max-h-full object-contain grayscale opacity-50 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700" 
-                     alt={img.caption || 'Moment'} 
+                     alt={img.caption ? `${img.caption} — Aakash Agrahari Portfolio` : 'Project Moment — Aakash Agrahari'} 
                     />
                     <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary transition-colors pointer-events-none" />
                  </div>

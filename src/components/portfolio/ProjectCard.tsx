@@ -58,7 +58,7 @@ export function ProjectCard({
         <div className={cn('relative overflow-hidden bg-accent/10', aspectRatioClasses[ratio])}>
           <motion.img
             src={project.coverImage || '/placeholder-project.jpg'}
-            alt={project.title}
+            alt={`${project.title} — Projeto by Aakash Agrahari`}
             className={cn(
               'absolute inset-0 h-full w-full object-cover transition-all duration-700 grayscale group-hover:scale-105 group-hover:grayscale-0',
               isLoaded ? 'opacity-100' : 'opacity-0'

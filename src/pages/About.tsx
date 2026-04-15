@@ -146,8 +146,8 @@ export default function About() {
                transition={{ duration: 1 }}
                className="relative"
             >
-               <div className="aspect-[3/4] bg-primary border-4 border-black shadow-[24px_24px_0px_black] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
-                  <img src={profile?.portrait_url || "/portrait.jpg"} className="w-full h-full object-cover" alt={profile?.name || "Builder"} />
+                <div className="aspect-[3/4] bg-primary border-4 border-black shadow-[24px_24px_0px_black] overflow-hidden grayscale hover:grayscale-0 transition-all duration-700">
+                  <img src={profile?.portrait_url || "/portrait.jpg"} className="w-full h-full object-cover" alt={profile?.name ? `${profile.name} — Aakash Agrahari Official Portfolio` : "Aakash Agrahari — Full Stack Developer"} />
                </div>
                <div className="absolute -bottom-6 -right-6 bg-black text-white p-6 space-y-1 hidden md:block">
                   <span className="text-[10px] font-black uppercase tracking-widest block text-primary">LOCATION</span>
