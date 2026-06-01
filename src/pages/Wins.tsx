@@ -29,9 +29,25 @@ export default function Wins() {
 
   return (
     <>
-      <SEOHead 
-        title="Wins"
-        description="Explore the chronicle of victories — hackathons, coding competitions, and academic academic honors."
+      <SEOHead
+        title="Wins & Awards"
+        description="Hackathon victories, coding competitions, and academic honors won by Aakash Agrahari — including GCU EUPHUISM 2026 (1st place) and CodeWar 7.0."
+        keywords={['Aakash Agrahari wins', 'Hackathon winner Nepal', 'Hackathon winner India', 'CrewSpace AI', 'EUPHUISM 2026']}
+        jsonLd={wins.length > 0 ? {
+          '@context': 'https://schema.org',
+          '@type': 'ItemList',
+          name: 'Awards and Wins of Aakash Agrahari',
+          itemListElement: wins.map((w, i) => ({
+            '@type': 'ListItem',
+            position: i + 1,
+            item: {
+              '@type': 'Award',
+              name: `${w.position} — ${w.title}`,
+              description: w.description,
+              awardedTo: { '@type': 'Person', name: 'Aakash Agrahari' }
+            }
+          }))
+        } : undefined}
       />
       <div className="min-h-screen bg-[#fdfbf7] pt-32 pb-24 selection:bg-primary">
       {/* Hero Header */}

@@ -15,16 +15,33 @@ export default function Contact() {
     <>
       <SEOHead
         title="Contact"
-        description={`Get in touch with ${photographerInfo.name} for collaborations, freelance work, startup opportunities, and project inquiries. ${photographerInfo.availability}`}
+        description={`Contact ${photographerInfo.name} — full stack developer & AI builder — for freelance work, collaborations, startup opportunities, and project inquiries.`}
+        keywords={[
+          'Contact Aakash Agrahari',
+          'Hire Full Stack Developer Nepal',
+          'Hire React Developer India',
+          'AI freelance developer'
+        ]}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'ContactPage',
+          name: 'Contact Aakash Agrahari',
+          url: 'https://aakashagrahari.com.np/contact',
+          mainEntity: {
+            '@type': 'Person',
+            name: 'Aakash Agrahari',
+            email: photographerInfo.email,
+            address: photographerInfo.location
+          }
+        }}
       />
-      
+
       <div className="min-h-screen bg-white">
-        {/* Simplified Header - No Hero Section */}
         <section className="pt-32 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
           <div className="inline-block bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-black mb-4">THE CONTACT</div>
-          <p className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-tight max-w-3xl">
-            Let's build something together. Get in touch for collaborations and opportunities.
-          </p>
+          <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-tight max-w-3xl">
+            Contact Aakash Agrahari — let's build something together.
+          </h1>
         </section>
 
         {/* Main Content */}

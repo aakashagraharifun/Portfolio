@@ -14,6 +14,7 @@ const NotFound = () => {
       <SEOHead
         title="Page Not Found"
         description="The page you're looking for doesn't exist. Return to the homepage to continue browsing."
+        noindex
       />
       
       <main className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-6">

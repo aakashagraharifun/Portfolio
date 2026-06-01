@@ -58,12 +58,19 @@ export function Header() {
   useEffect(() => setIsOpen(false), [location.pathname]);
 
   return (
+    <>
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-black focus:text-primary focus:px-4 focus:py-2 focus:font-black focus:uppercase focus:tracking-widest focus:text-xs focus:shadow-[4px_4px_0px_rgba(255,214,0,1)]"
+    >
+      Skip to content
+    </a>
     <header className={cn(
       'fixed top-0 left-0 right-0 z-[101] transition-all duration-500 border-b-2',
       (isVisible || isOpen) ? 'translate-y-0' : '-translate-y-full',
       (scrolled && !isNameHovered) ? 'bg-white/95 backdrop-blur-xl border-primary py-4' : 'bg-transparent border-transparent py-6'
     )}>
-      <nav className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+      <nav aria-label="Primary" className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
         <Link 
           to="/" 
           className="group flex items-center gap-2 relative"
@@ -94,8 +101,14 @@ export function Header() {
         </div>
 
         {/* Mobile Toggle */}
-        <button className="md:hidden text-black hover:text-primary transition-colors" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        <button
+          className="md:hidden text-black hover:text-primary transition-colors"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-controls="mobile-nav"
+          aria-label={isOpen ? 'Close menu' : 'Open menu'}
+        >
+          {isOpen ? <X size={28} aria-hidden="true" /> : <Menu size={28} aria-hidden="true" />}
         </button>
       </nav>
 
@@ -103,6 +116,7 @@ export function Header() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
+            id="mobile-nav"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
@@ -127,6 +141,7 @@ export function Header() {
         )}
       </AnimatePresence>
     </header>
+    </>
   );
 }
 

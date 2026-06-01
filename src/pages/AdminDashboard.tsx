@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { SEOHead } from '@/components/seo/SEOHead';
 
 export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
@@ -458,6 +459,8 @@ export default function AdminDashboard() {
   );
 
   return (
+    <>
+    <SEOHead title="Admin Dashboard" description="Portfolio management." noindex />
     <div className="min-h-screen bg-white selection:bg-primary">
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b-8 border-primary py-6 px-6 md:px-12 flex items-center justify-between">
         <div className="flex items-center gap-4">
@@ -1150,5 +1153,6 @@ export default function AdminDashboard() {
         </Tabs>
       </main>
     </div>
+    </>
   );
 }

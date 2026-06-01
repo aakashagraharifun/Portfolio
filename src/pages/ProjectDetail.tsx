@@ -3,7 +3,7 @@ import { useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, ExternalLink, Github, User, Code2, Loader2 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
-import { SEOHead } from '@/components/seo/SEOHead';
+import { SEOHead, buildCreativeWorkLd } from '@/components/seo/SEOHead';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { getProjectBySlug } from '@/services/projectService';
 import { ImageWithLightbox } from '@/components/portfolio/ImageWithLightbox';
@@ -57,10 +57,41 @@ export default function ProjectDetail() {
   return (
     <>
       <SEOHead
-        title={project.title}
-        description={project.description}
+        title={`${project.title} — ${project.category} project`}
+        description={
+          (project.description || `${project.title} by Aakash Agrahari — ${project.category} project built with ${(project.techStack || []).slice(0, 3).join(', ') || 'modern web tech'}.`).slice(0, 160)
+        }
         image={project.coverImage}
         type="article"
+        keywords={[
+          project.title,
+          'Aakash Agrahari',
+          project.category,
+          ...(project.techStack || []),
+          project.isHackathon ? 'hackathon project' : 'portfolio project'
+        ]}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Projects', path: '/portfolio' },
+          { name: project.title, path: `/project/${project.slug}` }
+        ]}
+        article={{
+          publishedTime: project.year ? `${project.year}-01-01` : undefined,
+          author: 'Aakash Agrahari',
+          section: project.category,
+          tags: project.techStack
+        }}
+        jsonLd={buildCreativeWorkLd({
+          title: project.title,
+          description: project.description,
+          slug: project.slug,
+          image: project.coverImage,
+          datePublished: project.year ? `${project.year}-01-01` : undefined,
+          category: project.category,
+          techStack: project.techStack,
+          liveUrl: project.liveUrl,
+          githubUrl: project.githubUrl
+        })}
       />
       
       <div className="min-h-screen">
@@ -73,10 +104,11 @@ export default function ProjectDetail() {
       >
         <img
           src={project.coverImage}
-          alt={project.title}
+          alt={`${project.title} — ${project.category} project by Aakash Agrahari${project.client ? `, ${project.client}` : ''}`}
           className="w-full h-full object-cover"
           loading="eager"
           fetchPriority="high"
+          decoding="async"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-transparent" />
         

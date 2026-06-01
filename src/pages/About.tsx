@@ -41,9 +41,22 @@ export default function About() {
 
   return (
     <>
-      <SEOHead 
-        title={`About — ${profile?.name || 'Aakash'}`} 
-        description={profile?.bio || "The mission, the stack, and the builder behind the projects."}
+      <SEOHead
+        title="About"
+        description={(profile?.bio ? `${profile.bio}` : "About Aakash Agrahari — full stack developer & AI builder. The mission, the stack, and the builder behind the projects.").slice(0, 160)}
+        type="profile"
+        keywords={['About Aakash Agrahari', 'Full Stack Developer biography', 'AI builder Nepal India']}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'ProfilePage',
+          mainEntity: {
+            '@type': 'Person',
+            name: profile?.name || 'Aakash Agrahari',
+            description: profile?.bio || 'Full stack developer & AI builder.',
+            url: 'https://aakashagrahari.com.np/about',
+            image: profile?.portrait_url || 'https://aakashagrahari.com.np/portrait.jpg'
+          }
+        }}
       />
       
       <div className="min-h-screen bg-white">

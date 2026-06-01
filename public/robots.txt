@@ -1,4 +1,15 @@
+# https://aakashagrahari.com.np/robots.txt
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /admin/dashboard
 
+# Block common low-value paths if they ever appear
+Disallow: /*?*utm_
+Disallow: /*?*fbclid=
+Disallow: /*?*gclid=
+
+# Good citizens get a sitemap
 Sitemap: https://aakashagrahari.com.np/sitemap.xml
+Host: https://aakashagrahari.com.np

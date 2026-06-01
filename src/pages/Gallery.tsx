@@ -26,7 +26,11 @@ export default function Gallery() {
 
   return (
     <>
-      <SEOHead title="Gallery — Aakash Agrahari" description="Moments, captures, and snapshots from the builder journey." />
+      <SEOHead
+        title="Gallery"
+        description="Visual journal of moments, hackathon wins, talks, and snapshots from Aakash Agrahari's builder journey."
+        keywords={['Aakash Agrahari gallery', 'hackathon photos', 'builder journey']}
+      />
       
       <div className="min-h-screen bg-white pt-48 pb-24 px-6 md:px-12">
         <div className="max-w-7xl mx-auto">
@@ -50,10 +54,12 @@ export default function Gallery() {
                     Pinned
                   </div>
                 )}
-                <img 
-                  src={img.image_url} 
-                  alt={img.caption} 
-                  className="w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700" 
+                <img
+                  src={img.image_url}
+                  alt={img.caption ? `${img.caption} — by Aakash Agrahari` : 'Gallery photo by Aakash Agrahari'}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-700"
                 />
                 <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
                    <p className="text-primary font-black uppercase text-xs tracking-widest italic">{img.caption}</p>
@@ -70,10 +76,17 @@ export default function Gallery() {
           className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-6 md:p-24 cursor-zoom-out"
           onClick={() => setSelectedImg(null)}
         >
-          <button className="absolute top-10 right-10 text-primary hover:rotate-90 transition-transform">
-            <X size={48} />
+          <button
+            className="absolute top-10 right-10 text-primary hover:rotate-90 transition-transform"
+            aria-label="Close image"
+          >
+            <X size={48} aria-hidden="true" />
           </button>
-          <img src={selectedImg} className="max-w-full max-h-full object-contain border-4 border-primary" />
+          <img
+            src={selectedImg}
+            alt="Expanded gallery photo by Aakash Agrahari"
+            className="max-w-full max-h-full object-contain border-4 border-primary"
+          />
         </div>
       )}
     </>

@@ -6,7 +6,7 @@ import { ProjectCard } from '@/components/portfolio/ProjectCard';
 import { ProjectPreviewModal } from '@/components/portfolio/ProjectPreviewModal';
 import { ScrollIndicator } from '@/components/ui/ScrollIndicator';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { SEOHead } from '@/components/seo/SEOHead';
+import { SEOHead, buildFAQLd, buildItemListLd } from '@/components/seo/SEOHead';
 import { ArrowRight, Loader2, Play, MousePointer2, Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Project } from '@/types';
@@ -62,15 +62,76 @@ export default function Home() {
     <F1PageLoader onComplete={() => setLoaderVisible(false)} />
   );
 
+  const homepageFAQ = buildFAQLd([
+    {
+      question: 'Who is Aakash Agrahari?',
+      answer:
+        'Aakash Agrahari is a full stack developer, hackathon winner, and AI builder from Guwahati, India and Butwal, Nepal, currently studying B.Tech CSE at Assam Royal Global University.'
+    },
+    {
+      question: 'What does Aakash Agrahari build?',
+      answer:
+        'AI-powered products, full stack web applications, and hackathon projects using React, Next.js, TypeScript, Node.js, Python, and Supabase.'
+    },
+    {
+      question: 'Is Aakash Agrahari available for freelance or collaboration?',
+      answer:
+        'Yes — open to freelance, collaborations, and startup opportunities. Reach out via the contact page.'
+    },
+    {
+      question: 'What hackathons has Aakash Agrahari won?',
+      answer:
+        '1st place at GCU EUPHUISM 2026 (₹10,000 prize) with CrewSpace AI, and 2nd place at CodeWar 7.0 by AEC Coding Club.'
+    }
+  ]);
+
+  const projectList = data.projects.length
+    ? buildItemListLd({
+        name: 'Featured projects by Aakash Agrahari',
+        items: data.projects.map((p) => ({
+          name: p.title,
+          url: `https://aakashagrahari.com.np/project/${p.slug}`,
+          description: p.description
+        }))
+      })
+    : null;
+
   return (
     <>
-      <SEOHead />
-      
+      <SEOHead
+        description="Aakash Agrahari — hackathon-winning full stack developer & AI builder from Guwahati, India & Butwal, Nepal. Explore projects, wins, and the builder journey."
+        keywords={[
+          'Aakash Agrahari',
+          'Full Stack Developer',
+          'AI Builder',
+          'React Developer Nepal',
+          'React Developer India',
+          'Hackathon Winner',
+          'Next.js Developer',
+          'Supabase Developer',
+          'CrewSpace AI'
+        ]}
+        jsonLd={projectList ? [homepageFAQ, projectList] : [homepageFAQ]}
+      />
+
+      {/* Hidden, keyword-rich H1 (visual H1 is the BUILDER/CREATOR display type) */}
+      <h1 className="sr-only">
+        Aakash Agrahari — Full Stack Developer, AI Builder, and Hackathon Winner from Guwahati, India & Butwal, Nepal
+      </h1>
+
       <div className="min-h-screen bg-white">
         {/* BIG STATEMENT HERO - Veeshal Inspired */}
         <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-primary px-6 md:px-12 selection:bg-black selection:text-primary pt-24 pb-24 md:pt-28 md:pb-32">
-          <div className="absolute inset-0 z-0">
-             <video autoPlay muted loop playsInline className="w-full h-full object-cover opacity-10 grayscale mix-blend-overlay">
+          <div className="absolute inset-0 z-0" aria-hidden="true">
+             <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="none"
+                poster="/portrait.jpg"
+                className="w-full h-full object-cover opacity-10 grayscale mix-blend-overlay"
+             >
                 <source src="/hero-video.mp4" type="video/mp4" />
              </video>
           </div>
@@ -86,9 +147,12 @@ export default function Home() {
                 <span className="bg-black text-primary px-3 py-1 font-black text-xs uppercase tracking-widest inline-block">PORTFOLIO 2026</span>
                 <span className="text-[10px] font-black uppercase tracking-widest text-black/50">GUWAHATI • INDIA, BUTWAL • NEPAL</span>
               </div>
-              <h1 className="text-[20vw] md:text-[18vw] leading-[0.8] font-black uppercase tracking-tighter text-black select-none pointer-events-none">
+              <p
+                aria-hidden="true"
+                className="text-[20vw] md:text-[18vw] leading-[0.8] font-black uppercase tracking-tighter text-black select-none pointer-events-none"
+              >
                 BUILDER<br /><span className="text-transparent stroke-black" style={{ WebkitTextStroke: '2px black' }}>CREATOR.</span>
-              </h1>
+              </p>
             </motion.div>
 
             <motion.div 

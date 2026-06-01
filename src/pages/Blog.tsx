@@ -30,7 +30,25 @@ export default function Blog() {
 
   return (
     <>
-      <SEOHead title="Blog — Aakash Agrahari" description="The technical journal of a builder and creator." />
+      <SEOHead
+        title="Blog & Engineering Journal"
+        description="Engineering deep-dives, hackathon recaps, and product build notes from Aakash Agrahari — covering React, Next.js, AI, and shipping side projects."
+        keywords={['Aakash Agrahari blog', 'React tutorials', 'AI engineering blog', 'Hackathon recap']}
+        jsonLd={blogs.length > 0 ? {
+          '@context': 'https://schema.org',
+          '@type': 'Blog',
+          name: 'Aakash Agrahari — Engineering Journal',
+          url: 'https://aakashagrahari.com.np/blog',
+          author: { '@type': 'Person', name: 'Aakash Agrahari' },
+          blogPost: blogs.slice(0, 10).map((b: any) => ({
+            '@type': 'BlogPosting',
+            headline: b.title,
+            url: `https://aakashagrahari.com.np/blog/${b.slug}`,
+            datePublished: b.created_at,
+            description: b.excerpt
+          }))
+        } : undefined}
+      />
       
       <div className="min-h-screen bg-white pt-48 pb-24 px-6 md:px-12">
         <div className="max-w-5xl mx-auto">

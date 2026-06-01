@@ -5,8 +5,9 @@ export default function Timeline() {
   return (
     <>
       <SEOHead
-        title="Timeline"
-        description="Explore the full milestone journey from the first step to the latest build."
+        title="Timeline & Journey"
+        description="The full milestone journey of Aakash Agrahari — first lines of code, hackathon wins, startup contributions, and the latest shipped builds."
+        keywords={['Aakash Agrahari timeline', 'Developer journey', 'Builder milestones']}
       />
 
       <div className="min-h-screen bg-white">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { SEOHead } from '@/components/seo/SEOHead';
+import { SEOHead, buildBlogPostingLd } from '@/components/seo/SEOHead';
 import { BlogContentRenderer } from '@/components/blog/BlogContentRenderer';
 import { supabase } from '@/lib/supabase';
 import { Loader2, ArrowLeft, Share2 } from 'lucide-react';
@@ -47,7 +47,33 @@ export default function BlogDetail() {
 
   return (
     <>
-      <SEOHead title={`${blog.title} — Aakash Agrahari`} description={blog.excerpt} />
+      <SEOHead
+        title={blog.title}
+        description={blog.excerpt}
+        image={blog.cover_image}
+        type="article"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Blog', path: '/blog' },
+          { name: blog.title, path: `/blog/${blog.slug}` }
+        ]}
+        article={{
+          publishedTime: blog.created_at,
+          modifiedTime: blog.updated_at || blog.created_at,
+          author: 'Aakash Agrahari',
+          section: 'Engineering',
+          tags: Array.isArray(blog.tags) ? blog.tags : undefined
+        }}
+        jsonLd={buildBlogPostingLd({
+          title: blog.title,
+          excerpt: blog.excerpt,
+          slug: blog.slug,
+          image: blog.cover_image,
+          publishedTime: blog.created_at,
+          modifiedTime: blog.updated_at,
+          tags: Array.isArray(blog.tags) ? blog.tags : undefined
+        })}
+      />
       
       <div className="min-h-screen bg-white">
         {/* HERO ARTICLE HEADER */}
@@ -80,7 +106,14 @@ export default function BlogDetail() {
           <div className="max-w-3xl mx-auto">
              {blog.cover_image && (
                <div className="aspect-video mb-24 border-4 border-black shadow-[24px_24px_0px_rgba(255,214,0,1)] overflow-hidden">
-                  <img src={blog.cover_image} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" alt={blog.title} />
+                  <img
+                    src={blog.cover_image}
+                    alt={`${blog.title} — Article cover by Aakash Agrahari`}
+                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                  />
                </div>
              )}
 

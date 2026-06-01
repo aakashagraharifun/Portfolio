@@ -27,18 +27,24 @@ export default function Portfolio() {
 
   return (
     <>
-      <SEOHead 
-        title="Projects"
-        description="Browse my complete archive — hackathon-winning projects, web apps, startup contributions, and creative experiments."
+      <SEOHead
+        title="Projects & Portfolio"
+        description="Browse the complete archive of Aakash Agrahari — hackathon-winning AI projects, full stack web apps, startup contributions, and creative experiments."
+        keywords={[
+          'Aakash Agrahari projects',
+          'Full Stack Developer portfolio',
+          'AI projects portfolio',
+          'Hackathon projects',
+          'React Next.js portfolio'
+        ]}
       />
-      
+
       <div className="min-h-screen bg-white">
-        {/* Simplified Header - No Hero Section */}
         <section className="pt-32 pb-12 px-6 md:px-12 max-w-7xl mx-auto">
           <div className="inline-block bg-primary text-black px-3 py-1 text-[10px] font-black uppercase tracking-widest border-2 border-black mb-4">THE ARCHIVE</div>
-          <p className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-tight max-w-3xl">
-            Every project is a story — hackathon sprints, shipped products, and creative experiments.
-          </p>
+          <h1 className="text-xl md:text-2xl font-black uppercase tracking-tighter leading-tight max-w-3xl">
+            Projects by Aakash Agrahari — hackathon sprints, shipped products, and creative experiments.
+          </h1>
         </section>
 
         {/* Dynamic Portfolio Grid */}

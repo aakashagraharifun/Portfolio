@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Lock, Mail, Loader2 } from 'lucide-react';
+import { SEOHead } from '@/components/seo/SEOHead';
 
 /**
  * Admin Login Page - Minimalist & Secure
@@ -40,8 +41,10 @@ export default function AdminLogin() {
   };
 
   return (
+    <>
+    <SEOHead title="Admin Access" description="Restricted area." noindex />
     <div className="min-h-screen flex items-center justify-center bg-background px-6">
-      <motion.div 
+      <motion.div
         className="max-w-md w-full space-y-8 p-12 border border-border bg-accent/5 rounded-sm"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -98,5 +101,6 @@ export default function AdminLogin() {
         </form>
       </motion.div>
     </div>
+    </>
   );
 }
